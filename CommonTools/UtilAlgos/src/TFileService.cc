@@ -7,6 +7,7 @@
 #include "FWCore/MessageLogger/interface/JobReport.h"
 #include "TFile.h"
 #include "TROOT.h"
+#include "Compression.h"
 
 #include <map>
 #include <unistd.h>
@@ -22,9 +23,10 @@ TFileService::TFileService(const edm::ParameterSet & cfg, edm::ActivityRegistry 
 {
   tFileDirectory_ = TFileDirectory("",
                                   "",
-                                  TFile::Open(fileName_.c_str(), "RECREATE"),
+                                  TFile::Open(fileName_.c_str(), "RECREATE", "", 8),
                                   "");
   file_ = tFileDirectory_.file_;
+  file_->SetCompressionAlgorithm (ROOT::kLZMA);
 
   // activities to monitor in order to set the proper directory
   r.watchPreModuleConstruction(this, & TFileService::setDirectoryName);
