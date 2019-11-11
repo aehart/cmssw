@@ -139,19 +139,10 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
       reco::TransientTrack* posTransTkPtr = nullptr;
       reco::TransientTrack* negTransTkPtr = nullptr;
 
-      if (theTrackRefs[trdx1]->charge() < 0. && theTrackRefs[trdx2]->charge() > 0.) {
-         negativeTrackRef = theTrackRefs[trdx1];
-         positiveTrackRef = theTrackRefs[trdx2];
-         negTransTkPtr = &theTransTracks[trdx1];
-         posTransTkPtr = &theTransTracks[trdx2];
-      } else if (theTrackRefs[trdx1]->charge() > 0. && theTrackRefs[trdx2]->charge() < 0.) {
-         negativeTrackRef = theTrackRefs[trdx2];
-         positiveTrackRef = theTrackRefs[trdx1];
-         negTransTkPtr = &theTransTracks[trdx2];
-         posTransTkPtr = &theTransTracks[trdx1];
-      } else {
-         continue;
-      }
+      negativeTrackRef = theTrackRefs[trdx1];
+      positiveTrackRef = theTrackRefs[trdx2];
+      negTransTkPtr = &theTransTracks[trdx1];
+      posTransTkPtr = &theTransTracks[trdx2];
 
       // measure distance between tracks at their closest approach
 
