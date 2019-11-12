@@ -174,8 +174,6 @@ void V0Fitter::fitAll(const edm::Event& iEvent,
       TrajectoryStateClosestToPoint const& negTSCP = negTransTkPtr->trajectoryStateClosestToPoint(cxPt);
       if (!posTSCP.isValid() || !negTSCP.isValid())
         continue;
-      if (posTSCP.momentum().dot(negTSCP.momentum()) < 0)
-        continue;
 
       // calculate mPiPi
       double totalE = sqrt(posTSCP.momentum().mag2() + piMassSquared) + sqrt(negTSCP.momentum().mag2() + piMassSquared);
