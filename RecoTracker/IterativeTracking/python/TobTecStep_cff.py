@@ -46,8 +46,8 @@ tobTecStepSeedLayersTripl = cms.EDProducer("SeedingLayersEDProducer",
 from RecoTracker.TkTrackingRegions.globalTrackingRegionFromBeamSpotFixedZ_cfi import globalTrackingRegionFromBeamSpotFixedZ as _globalTrackingRegionFromBeamSpotFixedZ
 tobTecStepTrackingRegionsTripl = _globalTrackingRegionFromBeamSpotFixedZ.clone(RegionPSet = dict(
     ptMin = 0.55,
-    originHalfLength = 20.0,
-    originRadius = 3.5
+    originHalfLength = 30.0,
+    originRadius = 6.0
 ))
 
 from Configuration.Eras.Modifier_pp_on_XeXe_2017_cff import pp_on_XeXe_2017
