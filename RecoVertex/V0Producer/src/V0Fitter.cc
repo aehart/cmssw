@@ -54,6 +54,7 @@ V0Fitter::V0Fitter(const edm::ParameterSet& theParameters, edm::ConsumesCollecto
 
    token_tracks = iC.consumes<reco::TrackCollection>(theParameters.getParameter<edm::InputTag>("trackRecoAlgorithm"));
    vertexFitter_ = theParameters.getParameter<bool>("vertexFitter");
+   doFit_ = theParameters.getParameter<bool>("doFit");
    useRefTracks_ = theParameters.getParameter<bool>("useRefTracks");
    
    // whether to reconstruct KShorts
@@ -72,8 +73,11 @@ V0Fitter::V0Fitter(const edm::ParameterSet& theParameters, edm::ConsumesCollecto
    vtxChi2Cut_ = theParameters.getParameter<double>("vtxChi2Cut");
    vtxDecaySigXYZCut_ = theParameters.getParameter<double>("vtxDecaySigXYZCut");
    vtxDecaySigXYCut_ = theParameters.getParameter<double>("vtxDecaySigXYCut");
+   vtxDecayXYCut_ = theParameters.getParameter<double>("vtxDecayXYCut");
+   ssVtxDecayXYCut_ = theParameters.getParameter<double>("ssVtxDecayXYCut");
    // miscellaneous cuts
-   tkDCACut_ = theParameters.getParameter<double>("tkDCACut");
+   innerTkDCACut_ = theParameters.getParameter<double>("innerTkDCACut");
+   outerTkDCACut_ = theParameters.getParameter<double>("outerTkDCACut");
    mPiPiCut_ = theParameters.getParameter<double>("mPiPiCut");
    innerHitPosCut_ = theParameters.getParameter<double>("innerHitPosCut");
    cosThetaXYCut_ = theParameters.getParameter<double>("cosThetaXYCut");
@@ -81,6 +85,8 @@ V0Fitter::V0Fitter(const edm::ParameterSet& theParameters, edm::ConsumesCollecto
    // cuts on the V0 candidate mass
    kShortMassCut_ = theParameters.getParameter<double>("kShortMassCut");
    lambdaMassCut_ = theParameters.getParameter<double>("lambdaMassCut");
+
+   maxV0sCut_ = theParameters.getParameter<int>("maxV0sCut");
 }
 
 // method containing the algorithm for vertex reconstruction
@@ -157,11 +163,16 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
       cApp.calculate(posState, negState);
       if (!cApp.status()) continue;
       float dca = std::abs(cApp.distance());
-      if (dca > tkDCACut_) continue;
 
       // the POCA should at least be in the sensitive volume
       GlobalPoint cxPt = cApp.crossingPoint();
       if (sqrt(cxPt.x()*cxPt.x() + cxPt.y()*cxPt.y()) > 120. || std::abs(cxPt.z()) > 300.) continue;
+
+      if (sqrt(cxPt.x()*cxPt.x() + cxPt.y()*cxPt.y()) < 5.0) {
+        if (dca > innerTkDCACut_) continue;
+      } else {
+        if (dca > outerTkDCACut_) continue;
+      }
 
       // the tracks should at least point in the same quadrant
       TrajectoryStateClosestToPoint const & posTSCP = posTransTkPtr->trajectoryStateClosestToPoint(cxPt);
@@ -182,14 +193,17 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
       transTracks.push_back(*negTransTkPtr);
 
       // create the vertex fitter object and vertex the tracks
-      TransientVertex theRecoVertex;
-      if (vertexFitter_) {
-         KalmanVertexFitter theKalmanFitter(useRefTracks_ == 0 ? false : true);
-         theRecoVertex = theKalmanFitter.vertex(transTracks);
-      } else if (!vertexFitter_) {
-         useRefTracks_ = false;
-         AdaptiveVertexFitter theAdaptiveFitter;
-         theRecoVertex = theAdaptiveFitter.vertex(transTracks);
+      const GlobalError dummyError(1.0e-3, 0.0, 1.0e-3, 0.0, 0.0, 1.0e-3);
+      TransientVertex theRecoVertex(cxPt, dummyError, transTracks, 1.0e-3);
+      if (doFit_) {
+        if (vertexFitter_) {
+           KalmanVertexFitter theKalmanFitter(useRefTracks_ == 0 ? false : true);
+           theRecoVertex = theKalmanFitter.vertex(transTracks);
+        } else if (!vertexFitter_) {
+           useRefTracks_ = false;
+           AdaptiveVertexFitter theAdaptiveFitter;
+           theRecoVertex = theAdaptiveFitter.vertex(transTracks);
+        }
       }
       if (!theRecoVertex.isValid()) continue;
      
@@ -204,6 +218,8 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
       double distMagXY = ROOT::Math::Mag(distVecXY);
       double sigmaDistMagXY = sqrt(ROOT::Math::Similarity(totalCov, distVecXY)) / distMagXY;
       if (distMagXY/sigmaDistMagXY < vtxDecaySigXYCut_) continue;
+      if (vtxDecayXYCut_ > 0. && distMagXY < vtxDecayXYCut_) continue;
+      if (ssVtxDecayXYCut_ > 0. && posTransTkPtr->charge() * negTransTkPtr->charge() > 0 && distMagXY < ssVtxDecayXYCut_) continue;
 
       // 3D decay significance
       if (vtxDecaySigXYZCut_ > 0.) {
@@ -361,6 +377,23 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
       theKshort = theLambda = theLambdaBar = nullptr;
 
     }
+  }
+
+  const auto comp = [](const reco::VertexCompositeCandidate &a, const reco::VertexCompositeCandidate &b) {
+    const double normalizedChi2A = a.vertexNormalizedChi2();
+    const double normalizedChi2B = b.vertexNormalizedChi2();
+    if (normalizedChi2A != normalizedChi2B)
+      return (normalizedChi2A <= normalizedChi2B);
+    else
+      return (hypot(a.vx(), a.vy()) >= hypot(b.vx(), b.vy()));
+  };
+  sort(theKshorts.begin(), theKshorts.end(), comp);
+  sort(theLambdas.begin(), theLambdas.end(), comp);
+  if (maxV0sCut_ >= 0) {
+    if (static_cast<int>(theKshorts.size()) > maxV0sCut_)
+      theKshorts.resize(maxV0sCut_);
+    if (static_cast<int>(theLambdas.size()) > maxV0sCut_)
+      theLambdas.resize(maxV0sCut_);
   }
 }
 
