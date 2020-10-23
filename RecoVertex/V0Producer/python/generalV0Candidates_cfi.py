@@ -25,6 +25,7 @@ generalV0Candidates = cms.EDProducer("V0Producer",
    # True -> KalmanVertexFitter (recommended)
    # False -> AdaptiveVertexFitter (not recommended)
    vertexFitter = cms.bool(True),
+   doFit = cms.bool(True),
 
    # use the refitted tracks returned from the KVF for V0Candidate kinematics
    # this is automatically set to False if using the AdaptiveVertexFitter
@@ -79,7 +80,10 @@ generalV0Candidates = cms.EDProducer("V0Producer",
    # -- cuts on the V0 candidate mass --
    # V0 mass window +- pdg value
    kShortMassCut = cms.double(0.07),
-   lambdaMassCut = cms.double(0.05)
+   lambdaMassCut = cms.double(0.05),
+
+   # maximum number of V0s to produce
+   maxV0sCut = cms.int32(-1)
 
 )
 

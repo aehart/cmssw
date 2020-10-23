@@ -88,6 +88,8 @@ V0Fitter::V0Fitter(const edm::ParameterSet& theParameters, edm::ConsumesCollecto
   // cuts on the V0 candidate mass
   kShortMassCut_ = theParameters.getParameter<double>("kShortMassCut");
   lambdaMassCut_ = theParameters.getParameter<double>("lambdaMassCut");
+
+  maxV0sCut_ = theParameters.getParameter<int>("maxV0sCut");
 }
 
 // method containing the algorithm for vertex reconstruction
@@ -197,6 +199,12 @@ void V0Fitter::fitAll(const edm::Event& iEvent,
       } else {
         if (dca > outerTkDCACut_)
           continue;
+      }
+
+      if (sqrt(cxPt.x()*cxPt.x() + cxPt.y()*cxPt.y()) < 5.0) {
+        if (dca > innerTkDCACut_) continue;
+      } else {
+        if (dca > outerTkDCACut_) continue;
       }
 
       // the tracks should at least point in the same quadrant
@@ -427,5 +435,22 @@ void V0Fitter::fitAll(const edm::Event& iEvent,
       delete theLambdaBar;
       theKshort = theLambda = theLambdaBar = nullptr;
     }
+  }
+
+  const auto comp = [](const reco::VertexCompositeCandidate &a, const reco::VertexCompositeCandidate &b) {
+    const double normalizedChi2A = a.vertexNormalizedChi2();
+    const double normalizedChi2B = b.vertexNormalizedChi2();
+    if (normalizedChi2A != normalizedChi2B)
+      return (normalizedChi2A <= normalizedChi2B);
+    else
+      return (hypot(a.vx(), a.vy()) >= hypot(b.vx(), b.vy()));
+  };
+  sort(theKshorts.begin(), theKshorts.end(), comp);
+  sort(theLambdas.begin(), theLambdas.end(), comp);
+  if (maxV0sCut_ >= 0) {
+    if (static_cast<int>(theKshorts.size()) > maxV0sCut_)
+      theKshorts.resize(maxV0sCut_);
+    if (static_cast<int>(theLambdas.size()) > maxV0sCut_)
+      theLambdas.resize(maxV0sCut_);
   }
 }
