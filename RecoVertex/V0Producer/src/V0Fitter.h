@@ -48,6 +48,7 @@ public:
 private:
   bool vertexFitter_;
   bool useRefTracks_;
+  bool doFit_;
   bool doKShorts_;
   bool doLambdas_;
 
@@ -61,8 +62,11 @@ private:
   double vtxChi2Cut_;
   double vtxDecaySigXYCut_;
   double vtxDecaySigXYZCut_;
+  double vtxDecayXYCut_;
+  double ssVtxDecayXYCut_;
   // miscellaneous cuts
-  double tkDCACut_;
+  double innerTkDCACut_;
+  double outerTkDCACut_;
   double mPiPiCut_;
   double innerHitPosCut_;
   double cosThetaXYCut_;
@@ -70,6 +74,8 @@ private:
   // cuts on the V0 candidate mass
   double kShortMassCut_;
   double lambdaMassCut_;
+
+  int maxV0sCut_;
 
   edm::EDGetTokenT<reco::TrackCollection> token_tracks;
   edm::EDGetTokenT<reco::BeamSpot> token_beamSpot;

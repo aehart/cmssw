@@ -21,6 +21,7 @@ generalV0Candidates = cms.EDProducer("V0Producer",
    # True -> KalmanVertexFitter (recommended)
    # False -> AdaptiveVertexFitter (not recommended)
    vertexFitter = cms.bool(True),
+   doFit = cms.bool(True),
 
    # use the refitted tracks returned from the KVF for V0Candidate kinematics
    # this is automatically set to False if using the AdaptiveVertexFitter
@@ -42,12 +43,17 @@ generalV0Candidates = cms.EDProducer("V0Producer",
    vtxChi2Cut = cms.double(6.63),
    # XY decay distance significance >
    vtxDecaySigXYCut = cms.double(15.),
+   # XY decay distance >
+   vtxDecayXYCut = cms.double(-1.),
+   # XY decay distance for SS vertices >
+   ssVtxDecayXYCut = cms.double(-1.),
    # XYZ decay distance significance >
    vtxDecaySigXYZCut = cms.double(-1.),
 
    # -- miscellaneous cuts --
    # POCA distance between tracks <
-   tkDCACut = cms.double(1.),
+   innerTkDCACut = cms.double(1.),
+   outerTkDCACut = cms.double(1.),
    # invariant mass of track pair - assuming both tracks are charged pions <
    mPiPiCut = cms.double(0.6),
    # check if either track has a hit radially inside the vertex position minus this number times the sigma of the vertex fit
@@ -61,7 +67,10 @@ generalV0Candidates = cms.EDProducer("V0Producer",
    # -- cuts on the V0 candidate mass --
    # V0 mass window +- pdg value
    kShortMassCut = cms.double(0.07),
-   lambdaMassCut = cms.double(0.05)
+   lambdaMassCut = cms.double(0.05),
+
+   # maximum number of V0s to produce
+   maxV0sCut = cms.int32(-1)
 
 )
 
