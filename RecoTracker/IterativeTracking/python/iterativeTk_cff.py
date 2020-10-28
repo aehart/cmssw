@@ -9,6 +9,7 @@ from RecoTracker.IterativeTracking.PixelPairStep_cff import *
 from RecoTracker.IterativeTracking.MixedTripletStep_cff import *
 from RecoTracker.IterativeTracking.PixelLessStep_cff import *
 from RecoTracker.IterativeTracking.TobTecStep_cff import *
+from RecoTracker.IterativeTracking.ExoRegionalStep_cff import *
 from RecoTracker.IterativeTracking.JetCoreRegionalStep_cff import *
 
 # Phase1 specific iterations
@@ -34,6 +35,7 @@ iterTrackingTask = cms.Task(InitialStepPreSplittingTask,
                             iterTrackingEarlyTask,
                             earlyGeneralTracks,
                             muonSeededStepTask,
+                            ExoRegionalStepTask,
                             preDuplicateMergingGeneralTracks,
                             generalTracksTask,
                             ConvStepTask,

@@ -88,6 +88,18 @@ TrackMonStep5.AlgoName      = cms.string('Step5')
 TrackMonStep5.doSeedParameterHistos = cms.bool(True)
 TrackMonStep5.doTrackCandHistos = cms.bool(True)
 
+# Step4 
+TrackMonStep6 = TrackMon.clone()
+TrackMonStep6.TrackProducer = cms.InputTag("exoRegionalStep")
+TrackMonStep6.SeedProducer  = cms.InputTag("sixthSeeds")
+TrackMonStep6.TCProducer    = cms.InputTag("sixthTrackCandidates")
+TrackMonStep6.beamSpot      = cms.InputTag("offlineBeamSpot")
+TrackMonStep6.FolderName    = cms.string('Tracking/Step6/GlobalParameters')
+TrackMonStep6.BSFolderName  = cms.string('Tracking/Step6/BeamSpotParameters')
+TrackMonStep6.AlgoName      = cms.string('Step6')
+TrackMonStep6.doSeedParameterHistos = cms.bool(True)
+TrackMonStep6.doTrackCandHistos = cms.bool(True)
+
 # high Purity 
 # ---------------------------------------------------------------------------#
 
@@ -118,6 +130,7 @@ trkmonootb = cms.Sequence(
 #    * TrackMonStep3
     * TrackMonStep4
     * TrackMonStep5 
+    * TrackMonStep6 
 )
 
 

@@ -43,6 +43,7 @@ namespace impl {
                                                                    reco::TrackBase::conversionStep,
                                                                    reco::TrackBase::muonSeededStepInOut,
                                                                    reco::TrackBase::muonSeededStepOutIn,
+                                                                   reco::TrackBase::exoRegionalStep,
                                                                    reco::TrackBase::outInEcalSeededConv,
                                                                    reco::TrackBase::inOutEcalSeededConv,
                                                                    reco::TrackBase::nuclInter,

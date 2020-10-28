@@ -147,6 +147,18 @@ seedMonitoring['muonSeededStepOutIn'] = cms.PSet(
     clusterMax        = cms.double(100000),
 )
 
+seedMonitoring['exoRegionalStep'] = cms.PSet(
+    seedInputTag     = cms.InputTag("exoRegionalStepSeeds"),
+    trackCandInputTag= cms.InputTag("exoRegionalStepTrackCandidates"),
+    trackSeedSizeBin = cms.int32(400),
+    trackSeedSizeMin = cms.double(0),
+    trackSeedSizeMax = cms.double(100000),
+    TCSizeMax        = cms.double(199.5),
+    clusterLabel     = cms.vstring('Strip'),
+    clusterBin       = cms.int32(100),
+    clusterMax       = cms.double(100000),
+)
+
 seedMonitoring['muonSeededStepOutInDisplaced'] = cms.PSet(
     seedInputTag      = cms.InputTag("muonSeededSeedsOutInDisplaced"),
     trackCandInputTag = cms.InputTag("muonSeededTrackCandidatesOutInDisplacedg"),

@@ -61,6 +61,7 @@ vectorHits.toModify(_iterations_trackingPhase2PU140, func=lambda x: x.append('Pi
 _iterations_muonSeeded = [
     "MuonSeededStepInOut",
     "MuonSeededStepOutIn",
+    "ExoRegionalStep",
 ]
 #Phase2
 _iterations_muonSeeded_trackingPhase2PU140 = [
@@ -70,6 +71,7 @@ _iterations_muonSeeded_trackingPhase2PU140 = [
 _multipleSeedProducers = {
     "MixedTripletStep": ["A", "B"],
     "TobTecStep": ["Pair", "Tripl"],
+    "ExoRegionalStep": ["Pair", "Tripl"],
 }
 _multipleSeedProducers_trackingLowPU = {
     "MixedTripletStep": ["A", "B"],
@@ -78,6 +80,7 @@ _multipleSeedProducers_trackingPhase1 = {
     "PixelPairStep": ["A", "B"],
     "MixedTripletStep": ["A", "B"],
     "TobTecStep": ["Pair", "Tripl"],
+    "ExoRegionalStep": ["Pair", "Tripl"],
 }
 _multipleSeedProducers_trackingPhase2PU140 = {}
 _oldStyleHasSelector = set([
@@ -88,6 +91,7 @@ _oldStyleHasSelector = set([
     "PixelPairStep",
     "PixelLessStep",
     "TobTecStep",
+    "ExoRegionalStep",
 ])
 
 from RecoLocalTracker.SubCollectionProducers.trackClusterRemover_cfi import trackClusterRemover as _trackClusterRemover
@@ -167,7 +171,10 @@ def _seedOrTrackProducers(postfix, typ):
             ret.append(seeder)
 
     for i in globals().get("_iterations_muonSeeded"+postfix, _iterations_muonSeeded):
-        ret.append(_modulePrefix(i).replace("Step", typ))
+        if "ExoRegional" in i:
+            ret.append(_modulePrefix(i) + typ)
+        else:
+            ret.append(_modulePrefix(i).replace("Step", typ))
 
     return ret
 
@@ -185,14 +192,14 @@ def clusterRemoverForIter(iteration, eraName="", postfix="", module=None):
 
     iters = globals()["_iterations"+postfix]
     try:
-        ind = iters.index(iteration)
+        ind = iters.index(iteration) if iteration != "ExoRegionalStep" else 999
     except ValueError:
         # if the iteration is not active in era, just return the same
         return module
 
     if ind == 0:
         raise Exception("Iteration %s is the first iteration in era %s, asking cluster remover configuration does not make sense" % (iteration, eraName))
-    prevIter = iters[ind-1]
+    prevIter = iters[ind-1] if ind != 999 else iters[-2]
 
     customize = dict(
         trajectories          = _tracks(prevIter),

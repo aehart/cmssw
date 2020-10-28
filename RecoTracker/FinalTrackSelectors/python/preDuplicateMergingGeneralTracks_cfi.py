@@ -5,10 +5,12 @@ from RecoTracker.FinalTrackSelectors.trackAlgoPriorityOrder_cfi import trackAlgo
 preDuplicateMergingGeneralTracks = TrackCollectionMerger.clone(
     trackProducers   = ["earlyGeneralTracks", 
                         "muonSeededTracksInOut",
-                        "muonSeededTracksOutIn"],
+                        "muonSeededTracksOutIn",
+                        "exoRegionalStepTracks"],
     inputClassifiers = ["earlyGeneralTracks", 
                        "muonSeededTracksInOutClassifier",
-                       "muonSeededTracksOutInClassifier"],
+                       "muonSeededTracksOutInClassifier",
+                       "exoRegionalStep"],
     foundHitBonus    = 100.0,
     lostHitPenalty   = 1.0
 )

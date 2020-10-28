@@ -3638,7 +3638,8 @@ void TrackingNtuple::fillDescriptions(edm::ConfigurationDescriptions& descriptio
                                  edm::InputTag("seedTrackstobTecStepSeeds"),
                                  edm::InputTag("seedTracksjetCoreRegionalStepSeeds"),
                                  edm::InputTag("seedTracksmuonSeededSeedsInOut"),
-                                 edm::InputTag("seedTracksmuonSeededSeedsOutIn")});
+                                 edm::InputTag("seedTracksmuonSeededSeedsOutIn"),
+                                 edm::InputTag("seedTracksexoRegionalStepSeeds")});
   desc.addUntracked<std::vector<edm::InputTag>>(
       "trackCandidates",
       std::vector<edm::InputTag>{edm::InputTag("initialStepTrackCandidates"),
@@ -3650,7 +3651,8 @@ void TrackingNtuple::fillDescriptions(edm::ConfigurationDescriptions& descriptio
                                  edm::InputTag("tobTecStepTrackCandidates"),
                                  edm::InputTag("jetCoreRegionalStepTrackCandidates"),
                                  edm::InputTag("muonSeededTrackCandidatesInOut"),
-                                 edm::InputTag("muonSeededTrackCandidatesOutIn")});
+                                 edm::InputTag("muonSeededTrackCandidatesOutIn"),
+                                 edm::InputTag("exoRegionalStepTrackCandidates")});
   desc.addUntracked<edm::InputTag>("tracks", edm::InputTag("generalTracks"));
   desc.addUntracked<std::vector<std::string>>("trackMVAs", std::vector<std::string>{{"generalTracks"}});
   desc.addUntracked<edm::InputTag>("trackingParticles", edm::InputTag("mix", "MergedTrackTruth"));

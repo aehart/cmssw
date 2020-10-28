@@ -139,6 +139,7 @@ if (process.runType.getRunType() == process.runType.pp_run or process.runType.ge
                                   *process.MixedTripletStep
                                   *process.PixelLessStep
                                   *process.TobTecStep
+                                  *process.ExoRegionalStep
                                   *process.generalTracks) 
 
 

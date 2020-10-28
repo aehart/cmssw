@@ -550,6 +550,9 @@ _possibleTrackingColls = [
     'jetCoreRegionalStep',
     'muonSeededStepInOut',
     'muonSeededStepOutIn',
+    'exoRegionalStepPair',  # seeds
+    'exoRegionalStepTripl', # seeds
+    'exoRegionalStep',
     'duplicateMerge',
 ] + _possibleTrackingNonIterationColls
 _possibleTrackingCollsOld = {
@@ -1585,6 +1588,21 @@ _iterations = [
                          "muonSeededTracksOutIntSelector"],
 #              other=["earlyMuons"]
           ),
+    Iteration("exoRegionalStep",
+              seeding=["exoRegionalStepSeedLayersTripl",
+                       "exoRegionalStepSeedLayersPair",
+                       "exoRegionalStepTrackingRegionsTripl",
+                       "exoRegionalStepTrackingRegionsPair",
+                       "exoRegionalStepHitDoubletsTripl",
+                       "exoRegionalStepHitDoubletsPair",
+                       "exoRegionalStepHitTripletsTripl",
+                       "exoRegionalStepSeedsTripl",
+                       "exoRegionalStepSeedsPair",
+                       "exoRegionalStepSeeds"],
+              selection=["exoRegionalStepClassifier1",
+                         "exoRegionalStepClassifier2",
+                         "exoRegionalStep",
+                         "exoRegionalStepSelector"]),
     Iteration("duplicateMerge",
               clusterMasking=[], seeding=[],
               building=["duplicateTrackCandidates"],

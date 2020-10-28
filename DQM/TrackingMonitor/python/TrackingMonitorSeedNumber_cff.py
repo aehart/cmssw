@@ -118,6 +118,19 @@ TrackMonStep10.NClusStrBin   = cms.int32(500)
 TrackMonStep10.NClusStrMax   = cms.double(100000)
 TrackMonStep10.ClusterLabels = cms.vstring('Strip')
 
+TrackMonStep11 = DQM.TrackingMonitor.TrackingMonitorSeed_cfi.TrackMonSeed.clone()
+TrackMonStep11.TrackProducer = cms.InputTag("generalTracks")
+TrackMonStep11.SeedProducer  = cms.InputTag("exoRegionalStepSeeds")
+TrackMonStep11.TCProducer    = cms.InputTag("exoRegionalStepTrackCandidates")
+TrackMonStep11.AlgoName      = cms.string('exoRegionalStep')
+TrackMonStep11.TkSeedSizeBin = cms.int32(400)
+TrackMonStep11.TkSeedSizeMax = cms.double(100000)                         
+TrackMonStep11.TkSeedSizeMin = cms.double(0)
+TrackMonStep11.TCSizeMax     = cms.double(199.5)
+TrackMonStep11.NClusStrBin   = cms.int32(500)
+TrackMonStep11.NClusStrMax   = cms.double(100000)
+TrackMonStep11.ClusterLabels = cms.vstring('Strip')
+
 # out of the box
 trackMonIterativeTracking2012 = cms.Sequence(
      TrackMonStep0
@@ -129,6 +142,7 @@ trackMonIterativeTracking2012 = cms.Sequence(
     * TrackMonStep6
     * TrackMonStep9
     * TrackMonStep10
+    * TrackMonStep11
 )
 
 

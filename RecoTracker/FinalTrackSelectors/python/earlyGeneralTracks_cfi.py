@@ -32,7 +32,7 @@ trackingLowPU.toModify(earlyGeneralTracks,
         'detachedTripletStepTracks',
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
-        'tobTecStepTracks'
+        'tobTecStepTracks',
     ],
     inputClassifiers = [
         'initialStepSelector',
@@ -57,7 +57,7 @@ _forPhase1 = dict(
         'pixelPairStepTracks',
         'mixedTripletStepTracks',
         'pixelLessStepTracks',
-        'tobTecStepTracks'
+        'tobTecStepTracks',
     ],
     inputClassifiers = [
         'initialStep',

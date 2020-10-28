@@ -144,6 +144,7 @@ process.iterTracking =cms.Sequence(process.InitialStep
                                   *process.MixedTripletStep
                                   *process.PixelLessStep
                                   *process.TobTecStep
+                                  *process.ExoRegionalStep
                                   *process.generalTracks) 
 
 process.tracking_FirstStep = cms.Sequence(process.siPixelDigis

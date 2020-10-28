@@ -10,26 +10,26 @@ LocalRecoLogMessageMon.categories     = cms.vstring( 'SiPixelRawToDigi', 'TooMan
 # apparentely there are not LogError in RecoLocalTracker/SubCollectionProducers/src/TrackClusterRemover.cc
 ClusterizerLogMessageMon = DQM.TrackingMonitor.LogMessageMonitor_cfi.LogMessageMon.clone()
 ClusterizerLogMessageMon.pluginsMonName = cms.string ( 'TrackClusterRemover' )
-ClusterizerLogMessageMon.modules        = cms.vstring( 'detachedTripletStepClusters', 'lowPtTripletStepClusters', 'pixelPairStepClusters', 'mixedTripletStepClusters', 'pixelLessStepClusters', 'tobTecStepClusters' ) # TrackClusterRemover
+ClusterizerLogMessageMon.modules        = cms.vstring( 'detachedTripletStepClusters', 'lowPtTripletStepClusters', 'pixelPairStepClusters', 'mixedTripletStepClusters', 'pixelLessStepClusters', 'tobTecStepClusters', 'exoRegionalStepClusters' ) # TrackClusterRemover
 ClusterizerLogMessageMon.categories     = cms.vstring(  )
 
 # initialStepSeeds,lowPtTripletStepSeeds, pixelPairStepSeeds, detachedTripletStepSeeds, : TooManyClusters (SeedGeneratorFromRegionHitsEDProducer),
 # photonConvTrajSeedFromSingleLeg : (PhotonConversionTrajectorySeedProducerFromSingleLeg)
 SeedingLogMessageMon = DQM.TrackingMonitor.LogMessageMonitor_cfi.LogMessageMon.clone()
 SeedingLogMessageMon.pluginsMonName = cms.string ( 'Seeding' ) 
-SeedingLogMessageMon.modules        = cms.vstring( 'initialStepSeedsPreSplitting', 'initialStepSeeds', 'detachedTripletStepSeeds', 'lowPtTripletStepSeeds', 'pixelPairStepSeeds', 'mixedTripletStepSeedsA', 'mixedTripletStepSeedsB', 'pixelLessStepSeeds', 'tobTecStepSeeds', 'jetCoreRegionalStepSeeds', 'muonSeededSeedsOutIn', 'muonSeededSeedsInOut', 'photonConvTrajSeedFromSingleLeg')
+SeedingLogMessageMon.modules        = cms.vstring( 'initialStepSeedsPreSplitting', 'initialStepSeeds', 'detachedTripletStepSeeds', 'lowPtTripletStepSeeds', 'pixelPairStepSeeds', 'mixedTripletStepSeedsA', 'mixedTripletStepSeedsB', 'pixelLessStepSeeds', 'tobTecStepSeeds', 'jetCoreRegionalStepSeeds', 'muonSeededSeedsOutIn', 'muonSeededSeedsInOut', 'exoRegionalStepSeeds', 'photonConvTrajSeedFromSingleLeg')
 SeedingLogMessageMon.categories     = cms.vstring( 'TooManyClusters', 'TooManyPairs', 'TooManyTriplets', 'TooManySeeds' )
 
 # RecoTracker/CkfPattern/src/CkfTrackCandidateMakerBase.cc
 TrackCandidateLogMessageMon = DQM.TrackingMonitor.LogMessageMonitor_cfi.LogMessageMon.clone()
 TrackCandidateLogMessageMon.pluginsMonName = cms.string ( 'TrackCandidate' ) 
-TrackCandidateLogMessageMon.modules        = cms.vstring( 'initialStepTrackCandidatesPreSplitting', 'initialStepTrackCandidates', 'detachedTripletStepTrackCandidates', 'lowPtTripletStepTrackCandidates', 'pixelPairStepTrackCandidates', 'mixedTripletStepTrackCandidates', 'pixelLessStepTrackCandidates', 'tobTecStepTrackCandidates', 'jetCoreRegionalStepTrackCandidates', 'muonSeededTrackCandidatesInOut', 'muonSeededTrackCandidatesOutIn', 'convTrackCandidates' )
+TrackCandidateLogMessageMon.modules        = cms.vstring( 'initialStepTrackCandidatesPreSplitting', 'initialStepTrackCandidates', 'detachedTripletStepTrackCandidates', 'lowPtTripletStepTrackCandidates', 'pixelPairStepTrackCandidates', 'mixedTripletStepTrackCandidates', 'pixelLessStepTrackCandidates', 'tobTecStepTrackCandidates', 'jetCoreRegionalStepTrackCandidates', 'muonSeededTrackCandidatesInOut', 'muonSeededTrackCandidatesOutIn', 'exoRegionalStepTrackCandidates', 'convTrackCandidates' )
 TrackCandidateLogMessageMon.categories     = cms.vstring( 'TooManySeeds' )
 
 # TrackProducer:FailedPropagation 
 TrackFinderLogMessageMon = DQM.TrackingMonitor.LogMessageMonitor_cfi.LogMessageMon.clone()
 TrackFinderLogMessageMon.pluginsMonName = cms.string ( 'TrackFinder' ) 
-TrackFinderLogMessageMon.modules        = cms.vstring( 'pixelTracks', 'initialStepTracks', 'lowPtTripletStepTracks', 'pixelPairStepTracks', 'detachedTripletStepTracks', 'mixedTripletStepTracks', 'pixelLessStepTracks', 'tobTecStepTracks', 'jetCoreRegionalStepTracks', 'muonSeededTracksOutIn', 'muonSeededTracksInOut', 'convStepTracks', 'generalTracks' )
+TrackFinderLogMessageMon.modules        = cms.vstring( 'pixelTracks', 'initialStepTracks', 'lowPtTripletStepTracks', 'pixelPairStepTracks', 'detachedTripletStepTracks', 'mixedTripletStepTracks', 'pixelLessStepTracks', 'tobTecStepTracks', 'jetCoreRegionalStepTracks', 'muonSeededTracksOutIn', 'muonSeededTracksInOut', 'exoRegionalStepTracks', 'convStepTracks', 'generalTracks' )
 TrackFinderLogMessageMon.categories     = cms.vstring(
     'FailedPropagation', 'RKPropagatorInS'
 )
@@ -59,6 +59,9 @@ FullIterTrackingLogMessageMon.modules     = cms.vstring(
        'tobTecStepSeeds_iter6',
        'tobTecStepTrackCandidates_iter6',
        'tobTecStepTracks_iter6',
+       'exoRegionalStepSeeds_iter7',
+       'exoRegionalStepTrackCandidates_iter7',
+       'exoRegionalStepTracks_iter7',
        'photonConvTrajSeedFromSingleLeg',
        'convTrackCandidates',
        'convStepTracks',
@@ -95,6 +98,9 @@ IterTrackingLogMessageMon.modules     = cms.vstring(
        'tobTecStepSeeds_iter6',
        'tobTecStepTrackCandidates_iter6',
        'tobTecStepTracks_iter6',
+       'exoRegionalStepSeeds_iter7',
+       'exoRegionalStepTrackCandidates_iter7',
+       'exoRegionalStepTracks_iter7',
 )
 IterTrackingLogMessageMon.categories     = cms.vstring(
     'TooManyClusters',

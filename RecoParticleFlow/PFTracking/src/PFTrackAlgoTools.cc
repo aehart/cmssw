@@ -24,6 +24,7 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::pixelLessStep:
         return cuts[3];
       case reco::TrackBase::tobTecStep:
+      case reco::TrackBase::exoRegionalStep:
         return cuts[4];
       case reco::TrackBase::muonSeededStepInOut:
       case reco::TrackBase::muonSeededStepOutIn:
@@ -64,6 +65,7 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::pixelLessStep:
         return cuts[3];
       case reco::TrackBase::tobTecStep:
+      case reco::TrackBase::exoRegionalStep:
         return cuts[4];
       case reco::TrackBase::muonSeededStepInOut:
       case reco::TrackBase::muonSeededStepOutIn:
@@ -108,6 +110,7 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::pixelLessStep:
         return errorScale[0];
       case reco::TrackBase::tobTecStep:
+      case reco::TrackBase::exoRegionalStep:
         return errorScale[1];
       default:
         return 1E9;
@@ -184,6 +187,7 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::hltIterX:
         return false;
       case reco::TrackBase::tobTecStep:
+      case reco::TrackBase::exoRegionalStep:
         return true;
       default:
         return true;
@@ -223,6 +227,7 @@ namespace PFTrackAlgoTools {
       case reco::TrackBase::mixedTripletStep:
       case reco::TrackBase::pixelLessStep:
       case reco::TrackBase::tobTecStep:
+      case reco::TrackBase::exoRegionalStep:
         return true;
       default:
         return false;
@@ -230,7 +235,7 @@ namespace PFTrackAlgoTools {
   }
 
   bool step5(const reco::TrackBase::TrackAlgorithm& algo) {
-    return (algo == reco::TrackBase::tobTecStep || algo == reco::TrackBase::pixelLessStep);
+    return (algo == reco::TrackBase::tobTecStep || algo==reco::TrackBase::exoRegionalStep || algo == reco::TrackBase::pixelLessStep);
   }
 
   bool goodPtResolution(const reco::TrackRef& trackref,
