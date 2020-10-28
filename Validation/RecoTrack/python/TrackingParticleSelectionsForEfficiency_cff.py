@@ -5,6 +5,7 @@ generalTpSelectorBlock = cms.PSet(
     chargedOnly = cms.bool(True),
     pdgId = cms.vint32(),
     signalOnly = cms.bool(True),
+    roiOnly = cms.bool(False),
     intimeOnly = cms.bool(False),
     stableOnly = cms.bool(False),
     minRapidity = cms.double(-2.5),

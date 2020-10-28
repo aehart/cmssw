@@ -8,10 +8,13 @@
  *  $Revision: 1.5.4.2 $
  *
  */
+#include "DataFormats/Common/interface/View.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Math/interface/PtEtaPhiMass.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+
+#include "HiggsLongLived/TreeMaker/interface/TreeClasses/RegionOfInterest.h"
 
 class TrackingParticleSelector {
 public:
@@ -24,6 +27,7 @@ public:
                            double lip,
                            int minHit,
                            bool signalOnly,
+                           bool roiOnly,
                            bool intimeOnly,
                            bool chargedOnly,
                            bool stableOnly,
@@ -41,6 +45,7 @@ public:
         lip_(lip),
         minHit_(minHit),
         signalOnly_(signalOnly),
+        roiOnly_(roiOnly),
         intimeOnly_(intimeOnly),
         chargedOnly_(chargedOnly),
         stableOnly_(stableOnly),
@@ -89,13 +94,15 @@ public:
 
   /// Operator() performs the selection: e.g. if (tPSelector(tp)) {...}
   /// https://stackoverflow.com/questions/14466620/c-template-specialization-calling-methods-on-types-that-could-be-pointers-or/14466705
-  bool operator()(const TrackingParticle &tp) const { return select(&tp); }
-  bool operator()(const TrackingParticle *tp) const { return select(tp); }
+  bool operator()(const TrackingParticle &tp, const bool checkedROI = false) const { return select(&tp, checkedROI); }
+  bool operator()(const TrackingParticle *tp, const bool checkedROI = false) const { return select(tp, checkedROI); }
 
-  bool select(const TrackingParticle *tp) const {
+  bool select(const TrackingParticle *tp, const bool checkedROI) const {
     // signal only means no PU particles
     if (signalOnly_ && !isSignal(tp))
       return false;
+    if (roiOnly_ && !checkedROI)
+      throw cms::Exception("LogicError") << "TrackingParticleSelector: operator() must be called with both a tracking particle and a region of interest when roiOnly is true.";
     // intime only means no OOT PU particles
     if (intimeOnly_ && !isInTime(tp))
       return false;
@@ -153,6 +160,20 @@ public:
     return false;
   }
 
+  bool operator()(const TrackingParticle &tp, const edm::View<RegionOfInterest> &regions) const {
+    bool fromROI = !roiOnly_;
+    if (roiOnly_) {
+      for (const auto &roi : regions) {
+        const double dist = sqrt ((roi.vx() - tp.vx()) * (roi.vx() - tp.vx())
+                                + (roi.vy() - tp.vy()) * (roi.vy() - tp.vy())
+                                + (roi.vz() - tp.vz()) * (roi.vz() - tp.vz()));
+        fromROI = fromROI || (dist < roi.rParam());
+      }
+    }
+
+    return fromROI && (*this)(tp,true);
+  }
+
 private:
   double ptMin2_;
   double ptMax2_;
@@ -164,6 +185,7 @@ private:
   double lip_;
   int minHit_;
   bool signalOnly_;
+  bool roiOnly_;
   bool intimeOnly_;
   bool chargedOnly_;
   bool stableOnly_;
@@ -192,6 +214,7 @@ namespace reco {
                                         cfg.getParameter<double>("lip"),
                                         cfg.getParameter<int>("minHit"),
                                         cfg.getParameter<bool>("signalOnly"),
+                                        cfg.getParameter<bool>("roiOnly"),
                                         cfg.getParameter<bool>("intimeOnly"),
                                         cfg.getParameter<bool>("chargedOnly"),
                                         cfg.getParameter<bool>("stableOnly"),

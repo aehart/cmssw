@@ -670,6 +670,7 @@ RecoMuonValidator::RecoMuonValidator(const edm::ParameterSet& pset)
                                          tpset.getParameter<double>("lip"),
                                          tpset.getParameter<int>("minHit"),
                                          tpset.getParameter<bool>("signalOnly"),
+                                         tpset.getParameter<bool>("roiOnly"),
                                          tpset.getParameter<bool>("intimeOnly"),
                                          tpset.getParameter<bool>("chargedOnly"),
                                          tpset.getParameter<bool>("stableOnly"),

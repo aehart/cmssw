@@ -25,6 +25,8 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
+#include "HiggsLongLived/TreeMaker/interface/TreeClasses/RegionOfInterest.h"
+
 class PileupSummaryInfo;
 namespace reco {
   class DeDxData;
@@ -74,6 +76,7 @@ protected:
   std::vector<edm::EDGetTokenT<edm::View<reco::Track>>> labelToken;
   std::vector<edm::EDGetTokenT<edm::View<TrajectorySeed>>> labelTokenSeed;
   edm::EDGetTokenT<reco::BeamSpot> bsSrc;
+  edm::EDGetTokenT<edm::View<RegionOfInterest>> roiSrc;
 
   edm::EDGetTokenT<edm::ValueMap<reco::DeDxData>> m_dEdx1Tag;
   edm::EDGetTokenT<edm::ValueMap<reco::DeDxData>> m_dEdx2Tag;
@@ -105,13 +108,15 @@ private:
       const edm::Event& event,
       const edm::EventSetup& setup,
       const reco::BeamSpot& bs,
+      const edm::View<RegionOfInterest>& roi,
       std::vector<std::tuple<TrackingParticle::Vector, TrackingParticle::Point>>& momVert_tPCeff,
       std::vector<size_t>& selected_tPCeff) const;
   size_t tpDR(const TrackingParticleRefVector& tPCeff,
               const std::vector<size_t>& selected_tPCeff,
               DynArray<float>& dR_tPCeff,
               DynArray<float>& dR_tPCeff_jet,
-              const edm::View<reco::Candidate>* cores) const;
+              const edm::View<reco::Candidate>* cores,
+              const edm::View<RegionOfInterest>& roi) const;
   void trackDR(const edm::View<reco::Track>& trackCollection,
                const edm::View<reco::Track>& trackCollectionDr,
                DynArray<float>& dR_trk,

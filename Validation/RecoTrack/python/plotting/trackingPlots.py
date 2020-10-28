@@ -1349,6 +1349,7 @@ def _appendTrackingPlots(lastDirName, name, algoPlots, onlyForPileup=False, only
 _appendTrackingPlots("Track", "", _simBasedPlots+_recoBasedPlots)
 _appendTrackingPlots("TrackTPPtLess09", "tpPtLess09", _simBasedPlots)
 _appendTrackingPlots("TrackTPEtaGreater2p7", "tpEtaGreater2p7", _simBasedPlots+_recoBasedPlots)
+_appendTrackingPlots("TrackFromROI", "fromROI", _simBasedPlots)
 _appendTrackingPlots("TrackAllTPEffic", "allTPEffic", _simBasedPlots, onlyForPileup=True)
 _appendTrackingPlots("TrackFromPV", "fromPV", _simBasedPlots+_recoBasedPlots, onlyForPileup=True)
 _appendTrackingPlots("TrackFromPVAllTP", "fromPVAllTP", _simBasedPlots+_recoBasedPlots, onlyForPileup=True)

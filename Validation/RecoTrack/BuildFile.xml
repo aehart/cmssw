@@ -8,6 +8,7 @@
 <use name="DQM/SiStripCommon"/>
 <use name="CalibTracker/Records"/>
 <use name="RecoTracker/TkSeedingLayers"/>
+<use name="HiggsLongLived/TreeMaker"/>
 <export>
   <lib name="ValidationRecoTrack"/>
 </export>

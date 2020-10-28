@@ -121,6 +121,9 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset)
     parametersDefinerTP_ = std::make_unique<ParametersDefinerForTP>(beamSpotTag, consumesCollector());
   }
 
+  edm::InputTag roiTag = pset.getParameter<edm::InputTag>("regionsOfInterest");
+  roiSrc = consumes<edm::View<RegionOfInterest> >(roiTag);
+
   ParameterSet psetForHistoProducerAlgo = pset.getParameter<ParameterSet>("histoProducerAlgoBlock");
   histoProducerAlgo_ = std::make_unique<MTVHistoProducerAlgoForTracker>(psetForHistoProducerAlgo, doSeedPlots_);
 
@@ -168,6 +171,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset)
                                         pset.getParameter<double>("lipTP"),
                                         pset.getParameter<int>("minHitTP"),
                                         pset.getParameter<bool>("signalOnlyTP"),
+                                        pset.getParameter<bool>("roiOnlyTP"),
                                         pset.getParameter<bool>("intimeOnlyTP"),
                                         pset.getParameter<bool>("chargedOnlyTP"),
                                         pset.getParameter<bool>("stableOnlyTP"),
@@ -192,6 +196,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset)
                                           psetVsPhi.getParameter<double>("lip"),
                                           psetVsPhi.getParameter<int>("minHit"),
                                           psetVsPhi.getParameter<bool>("signalOnly"),
+                                          psetVsPhi.getParameter<bool>("roiOnly"),
                                           psetVsPhi.getParameter<bool>("intimeOnly"),
                                           psetVsPhi.getParameter<bool>("chargedOnly"),
                                           psetVsPhi.getParameter<bool>("stableOnly"),
@@ -426,6 +431,7 @@ void MultiTrackValidator::tpParametersAndSelection(
     const edm::Event& event,
     const edm::EventSetup& setup,
     const reco::BeamSpot& bs,
+    const edm::View<RegionOfInterest>& roi,
     std::vector<std::tuple<TrackingParticle::Vector, TrackingParticle::Point>>& momVert_tPCeff,
     std::vector<size_t>& selected_tPCeff) const {
   selected_tPCeff.reserve(tPCeff.size());
@@ -466,7 +472,7 @@ void MultiTrackValidator::tpParametersAndSelection(
       if (tp.eventId().bunchCrossing() == 0)
         ++nIntimeTPs;
 
-      if (tpSelector(tp)) {
+      if (tpSelector(tp, roi)) {
         selected_tPCeff.push_back(j);
         momVert_tPCeff.emplace_back(parametersDefinerTP_->momentumAndVertex(event, setup, tpr));
       }
@@ -482,7 +488,8 @@ size_t MultiTrackValidator::tpDR(const TrackingParticleRefVector& tPCeff,
                                  const std::vector<size_t>& selected_tPCeff,
                                  DynArray<float>& dR_tPCeff,
                                  DynArray<float>& dR_tPCeff_jet,
-                                 const edm::View<reco::Candidate>* cores) const {
+                                 const edm::View<reco::Candidate>* cores,
+                                 const edm::View<RegionOfInterest> &roi) const {
   if (tPCeff.empty()) {
     return 0;
   }
@@ -499,7 +506,7 @@ size_t MultiTrackValidator::tpDR(const TrackingParticleRefVector& tPCeff,
     auto const& tp = *(tPCeff[iTP1]);
     double dR = std::numeric_limits<double>::max();
     double dR_jet = std::numeric_limits<double>::max();
-    if (dRtpSelector(tp)) {  //only for those needed for efficiency!
+    if (dRtpSelector(tp, roi)) {  //only for those needed for efficiency!
       ++n_selTP_dr;
       float eta = etaL[iTP1];
       float phi = phiL[iTP1];
@@ -681,6 +688,9 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event,
   event.getByToken(bsSrc, recoBeamSpotHandle);
   reco::BeamSpot const& bs = *recoBeamSpotHandle;
 
+  edm::Handle<edm::View<RegionOfInterest>> roiHandle;
+  event.getByToken(roiSrc, roiHandle);
+
   edm::Handle<std::vector<PileupSummaryInfo>> puinfoH;
   event.getByToken(label_pileupinfo, puinfoH);
   PileupSummaryInfo puinfo;
@@ -723,7 +733,7 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event,
   // for "efficiency" TPs.
   std::vector<size_t> selected_tPCeff;
   std::vector<std::tuple<TrackingParticle::Vector, TrackingParticle::Point>> momVert_tPCeff;
-  tpParametersAndSelection(histograms, tPCeff, event, setup, bs, momVert_tPCeff, selected_tPCeff);
+  tpParametersAndSelection(histograms, tPCeff, event, setup, bs, *roiHandle, momVert_tPCeff, selected_tPCeff);
 
   //calculate dR for TPs
   declareDynArray(float, tPCeff.size(), dR_tPCeff);
@@ -739,7 +749,7 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event,
   }
   declareDynArray(float, tPCeff.size(), dR_tPCeff_jet);
 
-  size_t n_selTP_dr = tpDR(tPCeff, selected_tPCeff, dR_tPCeff, dR_tPCeff_jet, coresVector);
+  size_t n_selTP_dr = tpDR(tPCeff, selected_tPCeff, dR_tPCeff, dR_tPCeff_jet, coresVector, *roiHandle);
 
   edm::Handle<View<Track>> trackCollectionForDrCalculation;
   if (calculateDrSingleCollection_) {
@@ -1003,7 +1013,8 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event,
                                                                 bs.position(),
                                                                 mvaValues,
                                                                 selectsLoose,
-                                                                selectsHP);
+                                                                selectsHP,
+                                                                *roiHandle);
         mvaValues.clear();
 
         if (matchedTrackPointer && matchedSecondTrackPointer) {
@@ -1012,7 +1023,7 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event,
         }
 
         if (doSummaryPlots_) {
-          if (dRtpSelector(tp)) {
+          if (dRtpSelector(tp, *roiHandle)) {
             histograms.h_simul_coll[ww]->Fill(www);
             if (matchedTrackPointer) {
               histograms.h_assoc_coll[ww]->Fill(www);

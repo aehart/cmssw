@@ -62,6 +62,8 @@ multiTrackValidator = DQMEDAnalyzer(
     ### reco input configuration ###
     label = cms.VInputTag(cms.InputTag("generalTracks")),
     beamSpot = cms.InputTag("offlineBeamSpot"),
+    #regionsOfInterest = cms.InputTag("exoRegionalStepTrackingRegionsStepThree"),
+    regionsOfInterest = cms.InputTag("exoRegionalStepTrackingRegionsStepFive"),
 
     ### selection MVA
     mvaLabels = cms.untracked.PSet(),
