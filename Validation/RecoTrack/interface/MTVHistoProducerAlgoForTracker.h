@@ -26,6 +26,8 @@
 
 #include "DQMServices/Core/interface/DQMStore.h"
 
+#include "HiggsLongLived/TreeMaker/interface/TreeClasses/RegionOfInterest.h"
+
 struct MTVHistoProducerAlgoForTrackerHistograms {
   //sim
   using METype = dqm::reco::MonitorElement*;
@@ -190,7 +192,8 @@ public:
                                            const math::XYZPoint& bsPosition,
                                            const std::vector<float>& mvas,
                                            unsigned int selectsLoose,
-                                           unsigned int selectsHP) const;
+                                           unsigned int selectsHP,
+                                           const edm::View<RegionOfInterest> &roi) const;
 
   void fill_recoAssociated_simTrack_histos(const Histograms& histograms,
                                            int count,

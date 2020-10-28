@@ -1835,7 +1835,8 @@ void MTVHistoProducerAlgoForTracker::fill_recoAssociated_simTrack_histos(
     const math::XYZPoint& bsPosition,
     const std::vector<float>& mvas,
     unsigned int selectsLoose,
-    unsigned int selectsHP) const {
+    unsigned int selectsHP,
+    const edm::View<RegionOfInterest>& roi) const {
   bool isMatched = track;
   const auto eta = getEta(momentumTP.eta());
   const auto phi = momentumTP.phi();
@@ -1864,14 +1865,14 @@ void MTVHistoProducerAlgoForTracker::fill_recoAssociated_simTrack_histos(
     }
   }
 
-  if ((*TpSelectorForEfficiencyVsEta)(tp)) {
+  if ((*TpSelectorForEfficiencyVsEta)(tp, roi)) {
     //effic vs eta
     histograms.h_simuleta[count]->Fill(eta);
     if (isMatched)
       histograms.h_assoceta[count]->Fill(eta);
   }
 
-  if ((*TpSelectorForEfficiencyVsPhi)(tp)) {
+  if ((*TpSelectorForEfficiencyVsPhi)(tp, roi)) {
     histograms.h_simulphi[count]->Fill(phi);
     if (isMatched)
       histograms.h_assocphi[count]->Fill(phi);
@@ -1902,13 +1903,13 @@ void MTVHistoProducerAlgoForTracker::fill_recoAssociated_simTrack_histos(
       histograms.h_assocdrj[count]->Fill(dRJet);
   }
 
-  if ((*TpSelectorForEfficiencyVsPt)(tp)) {
+  if ((*TpSelectorForEfficiencyVsPt)(tp, roi)) {
     histograms.h_simulpT[count]->Fill(pt);
     if (isMatched)
       histograms.h_assocpT[count]->Fill(pt);
   }
 
-  if ((*TpSelectorForEfficiencyVsVTXR)(tp)) {
+  if ((*TpSelectorForEfficiencyVsVTXR)(tp, roi)) {
     histograms.h_simuldxy[count]->Fill(dxySim);
     if (isMatched)
       histograms.h_assocdxy[count]->Fill(dxySim);
@@ -1926,7 +1927,7 @@ void MTVHistoProducerAlgoForTracker::fill_recoAssociated_simTrack_histos(
       histograms.h_assocvertpos[count]->Fill(vertxy);
   }
 
-  if ((*TpSelectorForEfficiencyVsVTXZ)(tp)) {
+  if ((*TpSelectorForEfficiencyVsVTXZ)(tp, roi)) {
     histograms.h_simuldz[count]->Fill(dzSim);
     if (isMatched)
       histograms.h_assocdz[count]->Fill(dzSim);
