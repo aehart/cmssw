@@ -70,6 +70,8 @@ namespace pat {
           normalizedChi2_(0),
           covarianceVersion_(0),
           covarianceSchema_(0),
+          trackAlgorithm_(reco::TrackBase::undefAlgorithm),
+          originalTrackAlgorithm_(reco::TrackBase::undefAlgorithm),
           firstHit_(0) {}
 
     explicit PackedCandidate(const reco::Candidate &c,
@@ -101,6 +103,8 @@ namespace pat {
           normalizedChi2_(0),
           covarianceVersion_(0),
           covarianceSchema_(0),
+          trackAlgorithm_(reco::TrackBase::undefAlgorithm),
+          originalTrackAlgorithm_(reco::TrackBase::undefAlgorithm),
           firstHit_(0) {
       packBoth();
     }
@@ -139,6 +143,8 @@ namespace pat {
           normalizedChi2_(0),
           covarianceVersion_(0),
           covarianceSchema_(0),
+          trackAlgorithm_(reco::TrackBase::undefAlgorithm),
+          originalTrackAlgorithm_(reco::TrackBase::undefAlgorithm),
           firstHit_(0) {
       packBoth();
     }
@@ -177,6 +183,8 @@ namespace pat {
           normalizedChi2_(0),
           covarianceVersion_(0),
           covarianceSchema_(0),
+          trackAlgorithm_(reco::TrackBase::undefAlgorithm),
+          originalTrackAlgorithm_(reco::TrackBase::undefAlgorithm),
           firstHit_(0) {
       packBoth();
     }
@@ -221,6 +229,8 @@ namespace pat {
           normalizedChi2_(iOther.normalizedChi2_),
           covarianceVersion_(iOther.covarianceVersion_),
           covarianceSchema_(iOther.covarianceSchema_),
+          trackAlgorithm_(iOther.trackAlgorithm_),
+          originalTrackAlgorithm_(iOther.originalTrackAlgorithm_),
           firstHit_(iOther.firstHit_) {}
 
     PackedCandidate(PackedCandidate &&iOther)
@@ -262,6 +272,8 @@ namespace pat {
           normalizedChi2_(iOther.normalizedChi2_),
           covarianceVersion_(iOther.covarianceVersion_),
           covarianceSchema_(iOther.covarianceSchema_),
+          trackAlgorithm_(iOther.trackAlgorithm_),
+          originalTrackAlgorithm_(iOther.originalTrackAlgorithm_),
           firstHit_(iOther.firstHit_) {}
 
     PackedCandidate &operator=(const PackedCandidate &iOther) {
@@ -338,6 +350,8 @@ namespace pat {
       normalizedChi2_ = iOther.normalizedChi2_;
       covarianceVersion_ = iOther.covarianceVersion_;
       covarianceSchema_ = iOther.covarianceSchema_;
+      trackAlgorithm_ = iOther.trackAlgorithm_;
+      originalTrackAlgorithm_ = iOther.originalTrackAlgorithm_;
       firstHit_ = iOther.firstHit_;
       return *this;
     }
@@ -384,6 +398,8 @@ namespace pat {
       normalizedChi2_ = iOther.normalizedChi2_;
       covarianceVersion_ = iOther.covarianceVersion_;
       covarianceSchema_ = iOther.covarianceSchema_;
+      trackAlgorithm_ = iOther.trackAlgorithm_;
+      originalTrackAlgorithm_ = iOther.originalTrackAlgorithm_;
       firstHit_ = iOther.firstHit_;
       return *this;
     }
@@ -649,6 +665,8 @@ namespace pat {
       covarianceVersion_ = covarianceVersion;
       covarianceSchema_ = quality;
       normalizedChi2_ = tk.normalizedChi2();
+      trackAlgorithm_ = tk.algo();
+      originalTrackAlgorithm_ = tk.originalAlgo();
       setHits(tk);
       maybeUnpackBoth();
       packBoth();
@@ -999,6 +1017,9 @@ namespace pat {
     /// set time measurement
     void setTime(float aTime, float aTimeError = 0) { setDTimeAssociatedPV(aTime - vertexRef()->t(), aTimeError); }
 
+    const reco::TrackBase::TrackAlgorithm trackAlgorithm() const { return trackAlgorithm_; }
+    const reco::TrackBase::TrackAlgorithm originalTrackAlgorithm() const { return originalTrackAlgorithm_; }
+
   private:
     void unpackCovarianceElement(reco::TrackBase::CovarianceMatrix &m, uint16_t packed, int i, int j) const {
       m(i, j) = covarianceParameterization().unpack(
@@ -1145,6 +1166,9 @@ namespace pat {
     static constexpr int EXPO_TIMEERROR = 5;            // power of 2 used in encoding timeError
     static constexpr int EXPO_TIME_NOERROR = 6;         // power of 2 used in encoding time without timeError
     static constexpr int EXPO_TIME_WITHERROR = -6;      // power of 2 used in encoding time with timeError
+
+    reco::TrackBase::TrackAlgorithm trackAlgorithm_;
+    reco::TrackBase::TrackAlgorithm originalTrackAlgorithm_;
   };
 
   typedef std::vector<pat::PackedCandidate> PackedCandidateCollection;
