@@ -168,10 +168,12 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
       GlobalPoint cxPt = cApp.crossingPoint();
       if (sqrt(cxPt.x()*cxPt.x() + cxPt.y()*cxPt.y()) > 120. || std::abs(cxPt.z()) > 300.) continue;
 
-      if (sqrt(cxPt.x()*cxPt.x() + cxPt.y()*cxPt.y()) < 5.0) {
-        if (dca > innerTkDCACut_) continue;
+      if (sqrt(cxPt.x() * cxPt.x() + cxPt.y() * cxPt.y()) < 5.0) {
+        if (dca > innerTkDCACut_)
+          continue;
       } else {
-        if (dca > outerTkDCACut_) continue;
+        if (dca > outerTkDCACut_)
+          continue;
       }
 
       // the tracks should at least point in the same quadrant
@@ -217,9 +219,13 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
       SVector3 distVecXY(vtxPos.x()-referencePos.x(), vtxPos.y()-referencePos.y(), 0.);
       double distMagXY = ROOT::Math::Mag(distVecXY);
       double sigmaDistMagXY = sqrt(ROOT::Math::Similarity(totalCov, distVecXY)) / distMagXY;
-      if (distMagXY/sigmaDistMagXY < vtxDecaySigXYCut_) continue;
-      if (vtxDecayXYCut_ > 0. && distMagXY < vtxDecayXYCut_) continue;
-      if (ssVtxDecayXYCut_ > 0. && posTransTkPtr->charge() * negTransTkPtr->charge() > 0 && distMagXY < ssVtxDecayXYCut_) continue;
+      if (distMagXY / sigmaDistMagXY < vtxDecaySigXYCut_)
+        continue;
+      if (vtxDecayXYCut_ > 0. && distMagXY < vtxDecayXYCut_)
+        continue;
+      if (ssVtxDecayXYCut_ > 0. && posTransTkPtr->charge() * negTransTkPtr->charge() > 0 &&
+          distMagXY < ssVtxDecayXYCut_)
+        continue;
 
       // 3D decay significance
       if (vtxDecaySigXYZCut_ > 0.) {
@@ -379,7 +385,7 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
     }
   }
 
-  const auto comp = [](const reco::VertexCompositeCandidate &a, const reco::VertexCompositeCandidate &b) {
+  const auto comp = [](const reco::VertexCompositeCandidate& a, const reco::VertexCompositeCandidate& b) {
     const double normalizedChi2A = a.vertexNormalizedChi2();
     const double normalizedChi2B = b.vertexNormalizedChi2();
     if (normalizedChi2A != normalizedChi2B)
