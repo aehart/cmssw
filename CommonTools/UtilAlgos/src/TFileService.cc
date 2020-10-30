@@ -22,7 +22,7 @@ TFileService::TFileService(const edm::ParameterSet& cfg, edm::ActivityRegistry& 
       closeFileFast_(cfg.getUntrackedParameter<bool>("closeFileFast", false)) {
   tFileDirectory_ = TFileDirectory("", "", TFile::Open(fileName_.c_str(), "RECREATE", "", 8), "");
   file_ = tFileDirectory_.file_;
-  file_->SetCompressionAlgorithm (ROOT::kLZMA);
+  file_->SetCompressionAlgorithm(ROOT::kLZMA);
 
   // activities to monitor in order to set the proper directory
   r.watchPreModuleConstruction(this, &TFileService::setDirectoryName);
