@@ -201,10 +201,12 @@ void V0Fitter::fitAll(const edm::Event& iEvent,
           continue;
       }
 
-      if (sqrt(cxPt.x()*cxPt.x() + cxPt.y()*cxPt.y()) < 5.0) {
-        if (dca > innerTkDCACut_) continue;
+      if (sqrt(cxPt.x() * cxPt.x() + cxPt.y() * cxPt.y()) < 5.0) {
+        if (dca > innerTkDCACut_)
+          continue;
       } else {
-        if (dca > outerTkDCACut_) continue;
+        if (dca > outerTkDCACut_)
+          continue;
       }
 
       // the tracks should at least point in the same quadrant
@@ -437,7 +439,7 @@ void V0Fitter::fitAll(const edm::Event& iEvent,
     }
   }
 
-  const auto comp = [](const reco::VertexCompositeCandidate &a, const reco::VertexCompositeCandidate &b) {
+  const auto comp = [](const reco::VertexCompositeCandidate& a, const reco::VertexCompositeCandidate& b) {
     const double normalizedChi2A = a.vertexNormalizedChi2();
     const double normalizedChi2B = b.vertexNormalizedChi2();
     if (normalizedChi2A != normalizedChi2B)
