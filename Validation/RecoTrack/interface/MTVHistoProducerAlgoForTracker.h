@@ -189,7 +189,7 @@ public:
                                            const std::vector<float>& mvas,
                                            unsigned int selectsLoose,
                                            unsigned int selectsHP,
-                                           const edm::View<RegionOfInterest> &roi) const;
+                                           const edm::View<RegionOfInterest>& roi) const;
 
   void fill_recoAssociated_simTrack_histos(const Histograms& histograms,
                                            int count,
