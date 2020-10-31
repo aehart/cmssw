@@ -1147,6 +1147,7 @@ namespace pat {
 
     reco::TrackBase::TrackAlgorithm trackAlgorithm_;
     reco::TrackBase::TrackAlgorithm originalTrackAlgorithm_;
+
   public:
     uint16_t firstHit_;
   };
