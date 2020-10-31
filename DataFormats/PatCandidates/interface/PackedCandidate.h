@@ -1169,6 +1169,7 @@ namespace pat {
 
     reco::TrackBase::TrackAlgorithm trackAlgorithm_;
     reco::TrackBase::TrackAlgorithm originalTrackAlgorithm_;
+
   };
 
   typedef std::vector<pat::PackedCandidate> PackedCandidateCollection;
