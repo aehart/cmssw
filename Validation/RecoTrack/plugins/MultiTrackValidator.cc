@@ -117,7 +117,7 @@ MultiTrackValidator::MultiTrackValidator(const edm::ParameterSet& pset)
   bsSrc = consumes<reco::BeamSpot>(beamSpotTag);
 
   edm::InputTag roiTag = pset.getParameter<edm::InputTag>("regionsOfInterest");
-  roiSrc = consumes<edm::View<RegionOfInterest> >(roiTag);
+  roiSrc = consumes<edm::View<RegionOfInterest>>(roiTag);
 
   ParameterSet psetForHistoProducerAlgo = pset.getParameter<ParameterSet>("histoProducerAlgoBlock");
   histoProducerAlgo_ = std::make_unique<MTVHistoProducerAlgoForTracker>(psetForHistoProducerAlgo, doSeedPlots_);
@@ -484,7 +484,7 @@ size_t MultiTrackValidator::tpDR(const TrackingParticleRefVector& tPCeff,
                                  DynArray<float>& dR_tPCeff,
                                  DynArray<float>& dR_tPCeff_jet,
                                  const edm::View<reco::Candidate>* cores,
-                                 const edm::View<RegionOfInterest> &roi) const {
+                                 const edm::View<RegionOfInterest>& roi) const {
   float etaL[tPCeff.size()], phiL[tPCeff.size()];
   size_t n_selTP_dr = 0;
   for (size_t iTP : selected_tPCeff) {
@@ -725,7 +725,8 @@ void MultiTrackValidator::dqmAnalyze(const edm::Event& event,
   // for "efficiency" TPs.
   std::vector<size_t> selected_tPCeff;
   std::vector<std::tuple<TrackingParticle::Vector, TrackingParticle::Point>> momVert_tPCeff;
-  tpParametersAndSelection(histograms, tPCeff, *parametersDefinerTP, event, setup, bs, *roiHandle, momVert_tPCeff, selected_tPCeff);
+  tpParametersAndSelection(
+      histograms, tPCeff, *parametersDefinerTP, event, setup, bs, *roiHandle, momVert_tPCeff, selected_tPCeff);
 
   //calculate dR for TPs
   declareDynArray(float, tPCeff.size(), dR_tPCeff);

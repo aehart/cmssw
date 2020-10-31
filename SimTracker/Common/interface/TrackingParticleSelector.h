@@ -75,7 +75,8 @@ public:
     if (signalOnly_ && !(tp.eventId().bunchCrossing() == 0 && tp.eventId().event() == 0))
       return false;
     if (roiOnly_ && !checkedROI)
-      throw cms::Exception("LogicError") << "TrackingParticleSelector: operator() must be called with both a tracking particle and a region of interest when roiOnly is true.";
+      throw cms::Exception("LogicError") << "TrackingParticleSelector: operator() must be called with both a tracking "
+                                            "particle and a region of interest when roiOnly is true.";
     // intime only means no OOT PU particles
     if (intimeOnly_ && !(tp.eventId().bunchCrossing() == 0))
       return false;
@@ -135,14 +136,14 @@ public:
     bool fromROI = !roiOnly_;
     if (roiOnly_) {
       for (const auto &roi : regions) {
-        const double dist = sqrt ((roi.vx() - tp.vx()) * (roi.vx() - tp.vx())
-                                + (roi.vy() - tp.vy()) * (roi.vy() - tp.vy())
-                                + (roi.vz() - tp.vz()) * (roi.vz() - tp.vz()));
+        const double dist =
+            sqrt((roi.vx() - tp.vx()) * (roi.vx() - tp.vx()) + (roi.vy() - tp.vy()) * (roi.vy() - tp.vy()) +
+                 (roi.vz() - tp.vz()) * (roi.vz() - tp.vz()));
         fromROI = fromROI || (dist < roi.rParam());
       }
     }
 
-    return fromROI && (*this)(tp,true);
+    return fromROI && (*this)(tp, true);
   }
 
 private:
