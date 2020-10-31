@@ -442,11 +442,12 @@ namespace trackerDTC {
     const double lip = setup_.tpMaxVertZ();
     constexpr int minHit = 0;
     constexpr bool signalOnly = true;
+    constexpr bool roiOnly = false;
     constexpr bool intimeOnly = true;
     constexpr bool chargedOnly = true;
     constexpr bool stableOnly = false;
     tpSelector_ = TrackingParticleSelector(
-        ptMin, ptMax, -etaMax, etaMax, tip, lip, minHit, signalOnly, intimeOnly, chargedOnly, stableOnly);
+        ptMin, ptMax, -etaMax, etaMax, tip, lip, minHit, signalOnly, roiOnly, intimeOnly, chargedOnly, stableOnly);
   }
 
   // book histograms
