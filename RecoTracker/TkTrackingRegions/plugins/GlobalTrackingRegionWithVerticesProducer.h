@@ -74,7 +74,7 @@ public:
     desc.add<bool>("originRScaling4BigEvts", false);
     desc.add<bool>("ptMinScaling4BigEvts", false);
     desc.add<bool>("halfLengthScaling4BigEvts", false);
-    desc.add<bool>("allowEmpty",false);
+    desc.add<bool>("allowEmpty", false);
     desc.add<double>("minOriginR", 0);
     desc.add<double>("maxPtMin", 1000);
     desc.add<double>("minHalfLength", 0);

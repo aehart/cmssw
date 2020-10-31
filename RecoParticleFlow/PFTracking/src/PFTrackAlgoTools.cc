@@ -235,7 +235,8 @@ namespace PFTrackAlgoTools {
   }
 
   bool step5(const reco::TrackBase::TrackAlgorithm& algo) {
-    return (algo == reco::TrackBase::tobTecStep || algo==reco::TrackBase::exoRegionalStep || algo == reco::TrackBase::pixelLessStep);
+    return (algo == reco::TrackBase::tobTecStep || algo == reco::TrackBase::exoRegionalStep ||
+            algo == reco::TrackBase::pixelLessStep);
   }
 
   bool goodPtResolution(const reco::TrackRef& trackref,
