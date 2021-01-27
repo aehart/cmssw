@@ -44,55 +44,44 @@ exoRegionalStepSeedLayersTripl = cms.EDProducer("SeedingLayersEDProducer",
 
 # Triplet TrackingRegion
 from RecoTracker.FinalTrackSelectors.exoRegionalStepInputTracks_cfi import exoRegionalStepInputTracks
-from HiggsLongLived.TreeMaker.goodTrackProducer_cfi import goodTrackProducer as _goodTrackProducer
-from HiggsLongLived.TreeMaker.generalV0Candidates_cfi import generalV0Candidates as _generalV0Candidates
-from HiggsLongLived.TreeMaker.regionOfInterestProducer_cfi import regionOfInterestProducer as _regionOfInterestProducer
-from HiggsLongLived.TreeMaker.regionOfInterestSelector_cfi import regionOfInterestSelector as _regionOfInterestSelector
-from HiggsLongLived.TreeMaker.vertexOfInterestProducer_cfi import vertexOfInterestProducer as _vertexOfInterestProducer
+from RecoVertex.V0Producer.generalV0Candidates_cfi import generalV0Candidates as _generalV0Candidates
+from HiggsLongLived.TreeMaker.exoRegionProducer_cfi import exoRegionProducer as _exoRegionProducer
 from HiggsLongLived.TreeMaker.trueRegionOfInterestProducer_cfi import trueRegionOfInterestProducer as _trueRegionOfInterestProducer
-exoRegionalStepTrackingRegionsStepZero = _goodTrackProducer.clone(tracks = cms.InputTag("exoRegionalStepInputTracks"))
-exoRegionalStepTrackingRegionsStepOne = _generalV0Candidates.clone(
-    trackRecoAlgorithm = cms.InputTag("exoRegionalStepTrackingRegionsStepZero", ""),
+exoRegionalStepTrackingRegionsStepZero = _generalV0Candidates.clone(
+    trackRecoAlgorithm = cms.InputTag("exoRegionalStepInputTracks"),
+    doLambdas = cms.bool(False),
     doFit = cms.bool(False),
     useRefTracks = cms.bool(False),
     vtxDecayXYCut = cms.double(1.),
     ssVtxDecayXYCut = cms.double(5.),
     innerTkDCACut = cms.double(0.2),
     outerTkDCACut = cms.double(1.0),
-    innerHitPosCut = cms.double(4.0),
-    maxV0sCut = cms.int32(-1),
+    mPiPiCut = cms.double(13000.),
+    cosThetaXYCut = cms.double(0.),
+    kShortMassCut = cms.double(13000.),
 )
-exoRegionalStepTrackingRegionsStepTwo = _regionOfInterestProducer.clone(
+exoRegionalStepTrackingRegionsStepOne = _exoRegionProducer.clone(
     minRadius = cms.double (2.0),
-    trackClusters = cms.InputTag("exoRegionalStepTrackingRegionsStepOne", "Kshort"),
-)
-exoRegionalStepTrackingRegionsStepThree = _regionOfInterestSelector.clone(
     discriminatorCut = cms.double(0.5),
     genMatch = cms.string("None"),
-    #genMatch = cms.string("HToSSTobbbb"),
-    #genMatch = cms.string("stopToBottom"),
-    graph_path = cms.FileInPath('HiggsLongLived/DeepSets/data/FullData_Phi-64-128-256_16-32-64_F-128-64-32_Model.pb'),
     input_names = cms.vstring(
         'phi_0',
         'phi_1'
     ),
-    maxROIs = cms.int32(-1),
-    minNConstituents = cms.uint32(0),
-    minRadius = cms.double(2.0),
-    nThreads = cms.uint32(1),
     output_names = cms.vstring('model_5/activation_10/Softmax'),
-    regionsOfInterest = cms.InputTag("exoRegionalStepTrackingRegionsStepTwo", ""),
+    nThreads = cms.uint32(1),
     singleThreadPool = cms.string('no_threads'),
+    graph_path = cms.FileInPath('HiggsLongLived/DeepSets/data/FullData_Phi-64-128-256_16-32-64_F-128-64-32_Model.pb'),
+    trackClusters = cms.InputTag("exoRegionalStepTrackingRegionsStepZero", "Kshort"),
 )
-exoRegionalStepTrackingRegionsStepFour = _vertexOfInterestProducer.clone(regionsOfInterest = cms.InputTag("exoRegionalStepTrackingRegionsStepThree", ""))
-exoRegionalStepTrackingRegionsStepFive = _trueRegionOfInterestProducer.clone(physics = cms.string("HToSSTobbbb"))
-#exoRegionalStepTrackingRegionsStepFive = _trueRegionOfInterestProducer.clone(physics = cms.string("stopToBottom"))
+exoRegionalStepTrackingRegionsStepTwo = _trueRegionOfInterestProducer.clone(physics = cms.string("HToSSTobbbb"))
+#exoRegionalStepTrackingRegionsStepTwo = _trueRegionOfInterestProducer.clone(physics = cms.string("stopToBottom"))
 
 from RecoTracker.TkTrackingRegions.globalTrackingRegionWithVertices_cfi import globalTrackingRegionWithVertices as _globalTrackingRegionWithVertices
 exoRegionalStepTrackingRegionsTripl = _globalTrackingRegionWithVertices.clone(RegionPSet = dict(
     originRadius = 1.0,
     fixedError = 1.0,
-    VertexCollection = "exoRegionalStepTrackingRegionsStepFour",
+    VertexCollection = "exoRegionalStepTrackingRegionsStepOne",
     useFakeVertices = True,
     ptMin = 0.55,
     allowEmpty = True
@@ -191,7 +180,7 @@ exoRegionalStepSeedLayersPair = cms.EDProducer("SeedingLayersEDProducer",
 exoRegionalStepTrackingRegionsPair = _globalTrackingRegionWithVertices.clone(RegionPSet = dict(
     originRadius = 1.0,
     fixedError = 1.0,
-    VertexCollection = "exoRegionalStepTrackingRegionsStepFour",
+    VertexCollection = "exoRegionalStepTrackingRegionsStepOne",
     useFakeVertices = True,
     ptMin = 0.6,
     allowEmpty = True
@@ -485,9 +474,6 @@ ExoRegionalStepTask = cms.Task(exoRegionalStepClusters,
                           exoRegionalStepTrackingRegionsStepZero,
                           exoRegionalStepTrackingRegionsStepOne,
                           exoRegionalStepTrackingRegionsStepTwo,
-                          exoRegionalStepTrackingRegionsStepThree,
-                          exoRegionalStepTrackingRegionsStepFour,
-                          exoRegionalStepTrackingRegionsStepFive,
                           exoRegionalStepTrackingRegionsTripl,
                           exoRegionalStepHitDoubletsTripl,
                           exoRegionalStepHitTripletsTripl,
