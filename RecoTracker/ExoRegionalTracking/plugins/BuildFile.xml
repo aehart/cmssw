@@ -1,0 +1,14 @@
+<use name="DataFormats/BeamSpot"/>
+<use name="DataFormats/Candidate"/>
+<use name="DataFormats/Common"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="DataFormats/Math"/>
+<use name="DataFormats/VertexReco"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/Utilities"/>
+<use name="PhysicsTools/TensorFlow"/>
+<use name="RecoTracker/ExoRegionalTracking"/>
+<flags CXXFLAGS="-O3 -pipe"/>
+<!--flags  CXXFLAGS="-O0 -gdwarf -g3 -pipe"/-->
+<flags EDM_PLUGIN="1"/>
