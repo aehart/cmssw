@@ -69,8 +69,5 @@ generalV0Candidates = cms.EDProducer("V0Producer",
    kShortMassCut = cms.double(0.07),
    lambdaMassCut = cms.double(0.05),
 
-   # maximum number of V0s to produce
-   maxV0sCut = cms.int32(-1)
-
 )
 

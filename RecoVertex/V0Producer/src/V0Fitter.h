@@ -75,8 +75,6 @@ private:
   double kShortMassCut_;
   double lambdaMassCut_;
 
-  int maxV0sCut_;
-
   edm::EDGetTokenT<reco::TrackCollection> token_tracks;
   edm::EDGetTokenT<reco::BeamSpot> token_beamSpot;
   bool useVertex_;
