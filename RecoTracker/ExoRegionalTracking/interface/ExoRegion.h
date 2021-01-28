@@ -23,11 +23,7 @@
 
 struct ExoRegion {
 public:
-  ExoRegion()
-      : valid_(false),
-        rParam_(INVALID_DOUBLE),
-        sumOfCenters_(0.0, 0.0, 0.0)
-  {}
+  ExoRegion() : valid_(false), rParam_(INVALID_DOUBLE), sumOfCenters_(0.0, 0.0, 0.0) {}
 
   ExoRegion(const edm::Handle<edm::View<reco::VertexCompositeCandidate> > &, const unsigned, const double);
 
@@ -36,7 +32,9 @@ public:
   const bool valid() const { return valid_; }
   const double rParam() const { return rParam_; }
   const edm::RefVector<edm::View<reco::VertexCompositeCandidate> > &constituents() const { return constituents_; }
-  const edm::Ref<edm::View<reco::VertexCompositeCandidate> > constituent(const unsigned i) const { return constituents_.at(i); }
+  const edm::Ref<edm::View<reco::VertexCompositeCandidate> > constituent(const unsigned i) const {
+    return constituents_.at(i);
+  }
   const unsigned nConstituents() const { return constituents_.size(); }
   const math::XYZVector &sumOfCenters() const { return sumOfCenters_; }
   const math::XYZVector centerOfMass() const { return sumOfCenters_ * (1.0 / constituents_.size()); }

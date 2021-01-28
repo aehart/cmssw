@@ -8,7 +8,6 @@ ExoRegionProducer::ExoRegionProducer(const edm::ParameterSet &cfg, const ExoRegi
       genMatch_(cfg.getParameter<string>("genMatch")),
       input_names_(cfg.getParameter<vector<string> >("input_names")),
       output_names_(cfg.getParameter<vector<string> >("output_names")) {
-
   beamSpotToken_ = consumes<reco::BeamSpot>(cfg.getParameter<edm::InputTag>("beamSpot"));
   trackClustersToken_ =
       consumes<edm::View<reco::VertexCompositeCandidate> >(cfg.getParameter<edm::InputTag>("trackClusters"));
@@ -16,7 +15,8 @@ ExoRegionProducer::ExoRegionProducer(const edm::ParameterSet &cfg, const ExoRegi
     genParticlesToken_ = consumes<edm::View<reco::GenParticle> >(cfg.getParameter<edm::InputTag>("genParticles"));
 
   if (genMatch_ != "None" && genMatch_ != "HToSSTobbbb" && genMatch_ != "stopToBottom")
-    throw cms::Exception("BadConfig") << "Parameter genMatch must be set to \"None\", \"HToSSTobbbb\", or \"stopToBottom\".";
+    throw cms::Exception("BadConfig")
+        << "Parameter genMatch must be set to \"None\", \"HToSSTobbbb\", or \"stopToBottom\".";
 
   unsigned nThreads = cfg.getParameter<unsigned>("nThreads");
   string singleThreadPool = cfg.getParameter<string>("singleThreadPool");
@@ -107,7 +107,8 @@ void ExoRegionProducer::produce(edm::Event &event, const edm::EventSetup &setup)
 
   // Select valid ROIs.
   const auto roiPred = [&](const ExoRegion &roi) {
-    if (!roi.valid()) return true;
+    if (!roi.valid())
+      return true;
     const math::XYZVector x(roi.vx(), roi.vy(), roi.vz());
     if ((minRadius_ >= 0.0 && (x - bs).rho() < minRadius_) ||
         (genMatch_ != "None" && !roiContainsDecayVertex(x, decayVertices, roi.rParam())))
@@ -132,7 +133,7 @@ void ExoRegionProducer::produce(edm::Event &event, const edm::EventSetup &setup)
 }
 
 void ExoRegionProducer::getDecayVertices(const edm::View<reco::GenParticle> &genParticles,
-                                                vector<math::XYZVector> &decayVertices) const {
+                                         vector<math::XYZVector> &decayVertices) const {
   for (const auto &genParticle : genParticles) {
     if (genMatch_ == "HToSSTobbbb") {
       if (genParticle.pdgId() != 5)
@@ -155,8 +156,8 @@ void ExoRegionProducer::getDecayVertices(const edm::View<reco::GenParticle> &gen
 }
 
 const bool ExoRegionProducer::roiContainsDecayVertex(const math::XYZVector &roi,
-                                                            const vector<math::XYZVector> &decayVertices,
-                                                            const double r) const {
+                                                     const vector<math::XYZVector> &decayVertices,
+                                                     const double r) const {
   for (const auto &decayVertex : decayVertices)
     if ((roi - decayVertex).r() < r)
       return true;
