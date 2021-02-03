@@ -15,7 +15,7 @@ exoRegionProducer = cms.EDProducer('ExoRegionProducer',
     output_names = cms.vstring("model_5/activation_10/Softmax"),
     nThreads = cms.uint32(1),
     singleThreadPool = cms.string("no_threads"),
-    graph_path = cms.FileInPath("HiggsLongLived/DeepSets/data/FullData_Phi-64-128-256_16-32-64_F-128-64-32_Model.pb"),
+    graph_path = cms.FileInPath("RecoTracker/ExoRegionalTracking/data/FullData_Phi-64-128-256_16-32-64_F-128-64-32_Model.pb"),
 
     beamSpot = cms.InputTag("offlineBeamSpot"),
     trackClusters = cms.InputTag("generalV0Candidates", "Kshort", "TREEMAKER"),
