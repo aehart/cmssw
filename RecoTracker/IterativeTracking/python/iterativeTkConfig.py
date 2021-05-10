@@ -67,6 +67,10 @@ _iterations_muonSeeded = [
     "MuonSeededStepInOut",
     "MuonSeededStepOutIn",
 ]
+_iterations_muonSeeded_trackingPhase1 = [
+    "MuonSeededStepInOut",
+    "MuonSeededStepOutIn",
+]
 #Phase2
 _iterations_muonSeeded_trackingPhase2PU140 = [
     "MuonSeededStepInOut",
@@ -98,6 +102,10 @@ _oldStyleHasSelector = set([
     "PixelLessStep",
     "TobTecStep",
 ])
+
+from Configuration.ProcessModifiers.displacedRegionalTracking_cff import displacedRegionalTracking
+displacedRegionalTracking.toModify(_iterations_muonSeeded_trackingPhase1, func=lambda x: x.append('DisplacedRegionalStep'))
+displacedRegionalTracking.toModify(_multipleSeedProducers_trackingPhase1, func=lambda x: x.update({'DisplacedRegionalStep': ['Pair', 'Tripl']}))
 
 from RecoLocalTracker.SubCollectionProducers.trackClusterRemover_cfi import trackClusterRemover as _trackClusterRemover
 _trackClusterRemoverBase = _trackClusterRemover.clone(
@@ -194,7 +202,9 @@ def clusterRemoverForIter(iteration, eraName="", postfix="", module=None):
 
     iters = globals()["_iterations"+postfix]
     try:
-        ind = iters.index(iteration)
+        # DisplacedRegionalStep is a special case because it comes after the
+        # usual muon-seeded steps
+        ind = iters.index(iteration) if iteration != "DisplacedRegionalStep" else len(iters)
     except ValueError:
         # if the iteration is not active in era, just return the same
         return module
@@ -202,6 +212,10 @@ def clusterRemoverForIter(iteration, eraName="", postfix="", module=None):
     if ind == 0:
         raise Exception("Iteration %s is the first iteration in era %s, asking cluster remover configuration does not make sense" % (iteration, eraName))
     prevIter = iters[ind-1]
+    # JetCoreRegionalStep uses all clusters, so if that is the previous
+    # iteration, use the one before that for cluster removal
+    if prevIter == "JetCoreRegionalStep":
+        prevIter = iters[ind-2]
 
     customize = dict(
         trajectories          = _tracks(prevIter),
