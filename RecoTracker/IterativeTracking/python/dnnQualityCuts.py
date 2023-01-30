@@ -11,6 +11,7 @@ qualityCutDictionary = cms.PSet(
    MixedTripletStep    =        cms.vdouble(-0.83, -0.63, -0.38),
    PixelLessStep       =        cms.vdouble(-0.60, -0.40, 0.02),
    TobTecStep          =        cms.vdouble(-0.71, -0.58, -0.46), 
+   DisplacedRegionalStep =        cms.vdouble(-0.71, -0.58, -0.46),
    JetCoreRegionalStep =        cms.vdouble(-0.53, -0.33, 0.18)
 )
 
@@ -27,5 +28,6 @@ trackdnn_CKF.toModify(qualityCutDictionary,
    MixedTripletStep    =        [-0.86, -0.57, -0.12],
    PixelLessStep       =        [-0.81, -0.61, -0.17],
    TobTecStep          =        [-0.67, -0.54, -0.40],
+   DisplacedRegionalStep =        [-0.67, -0.54, -0.40],
    JetCoreRegionalStep =        [0.00, 0.03, 0.68]
 )
