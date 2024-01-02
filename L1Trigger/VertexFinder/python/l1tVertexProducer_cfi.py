@@ -52,7 +52,7 @@ l1tVertexProducer = cms.EDProducer('VertexProducer',
         # DBSCAN min density tracks
         DBSCANMinDensityTracks = cms.uint32(2),
         # Minimum pt of tracks used to create vertex [GeV]
-        VxMinTrackPt = cms.double(2.0),
+        VxMinTrackPt = cms.double(0.0),
         # Maximum pt of tracks used to create vertex [GeV]
         VxMaxTrackPt = cms.double(127.0),
         # When the track pt > VxMaxTrackPt, how should the tracks be considered
