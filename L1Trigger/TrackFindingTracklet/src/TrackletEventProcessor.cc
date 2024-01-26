@@ -300,6 +300,7 @@ void TrackletEventProcessor::event(SLHCEvent& ev,
       sector_->writeVMSME(first);
       sector_->writeAS(first);
     }
+    PCTimer_.stop();
 
     // match processor (alternative to ME+MC)
     MPTimer_.start();
