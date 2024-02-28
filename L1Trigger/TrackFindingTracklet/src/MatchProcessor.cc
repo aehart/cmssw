@@ -500,7 +500,6 @@ void MatchProcessor::execute(unsigned int iSector, double phimin) {
       break;
     }
   }
-  first_ = false; // Reset so next event avoids stale pointers
 
   if (settings_.writeMonitorData("MC")) {
     globals_->ofstream("matchcalculator.txt") << getName() << " " << countall << " " << countsel << endl;
