@@ -282,15 +282,14 @@ void TrackletEventProcessor::event(SLHCEvent& ev,
     sector_->executeTPD();
     TPDTimer_.stop();
 
-
     // projection calculator
     PCTimer_.start();
     sector_->executePC();
+    PCTimer_.stop();
     if (settings_->writeMem() && k == settings_->writememsect()) {
       sector_->writeTPROJ(first);
       sector_->writeTPAR(first);
     }
-    PCTimer_.stop();
 
     // VMStub ME Router
     VMSMERTimer_.start();
@@ -300,7 +299,6 @@ void TrackletEventProcessor::event(SLHCEvent& ev,
       sector_->writeVMSME(first);
       sector_->writeAS(first);
     }
-    PCTimer_.stop();
 
     // match processor (alternative to ME+MC)
     MPTimer_.start();
