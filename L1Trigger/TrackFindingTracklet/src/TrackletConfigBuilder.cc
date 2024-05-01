@@ -1018,16 +1018,18 @@ void TrackletConfigBuilder::writeASMemories(std::ostream& os, std::ostream& memo
                << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".allstubin" << std::endl;
           }
         } else {  // non duplicate MPs configuration
-          memories << "AllStubs: AS_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1"
-                   << " [42]" << std::endl;
-          if (combinedmodules_) {
-            modules << "VMRouterCM: VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << std::endl;
-          } else {
-            modules << "VMRouter: VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << std::endl;
-          }
-          os << "AS_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1"
-             << " input=> VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".allstubout output=> MP_"
-             << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".allstubin" << std::endl;
+	  memories << "AllStubs: AS_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1"
+		   << " [42]" << std::endl;
+	  memories << "AllStubs: AS_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n2"
+		   << " [42]" << std::endl;
+	  modules << "VMRouterCM: VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << std::endl;
+	  modules << "VMStubMERouter: VMSMER_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << std::endl;
+	  os << "AS_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1"
+	     << " input=> VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".allstubout output=> VMSMER_"
+	     << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".allstubin" << std::endl;
+	  os << "AS_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n2"
+	     << " input=> VMSMER_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".allstubout output=> MP_"
+	     << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".allstubin" << std::endl;
         }
       }
     }
@@ -1219,6 +1221,7 @@ void TrackletConfigBuilder::writeVMSMemories(std::ostream& os, std::ostream& mem
     //First write VMS memories used by MatchProcessor
     for (unsigned int ilayer = 0; ilayer < N_LAYER + N_DISK; ilayer++) {
       for (unsigned int iReg = 0; iReg < NRegions_[ilayer]; iReg++) {
+<<<<<<< HEAD
         if (duplicateMPs_) {
           if ((settings_.layersDisksDuplicatedEqualProjBalance()[ilayer] ||
                settings_.layersDisksDuplicatedWeightedProjBalance()[ilayer]) &&
@@ -1244,6 +1247,16 @@ void TrackletConfigBuilder::writeVMSMemories(std::ostream& os, std::ostream& mem
              << " input=> VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstuboutPHI" << iTCStr(iReg)
              << " output=> MP_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstubin" << std::endl;
         }
+=======
+        memories << "VMStubsME: VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1 [18]" << std::endl;
+        memories << "VMStubsME: VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n2 [18]" << std::endl;
+        os << "VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1"
+           << " input=> VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstuboutPHI" << iTCStr(iReg)
+           << " output=> VMSMER_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstubin" << std::endl;
+        os << "VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n2"
+           << " input=> VMSMER_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstubout"
+           << " output=> MP_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstubin" << std::endl;
+>>>>>>> adb410f17c7 (Changes needed for the VMSME Router module)
       }
     }
 
