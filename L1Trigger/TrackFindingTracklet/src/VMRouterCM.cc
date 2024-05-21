@@ -143,6 +143,7 @@ void VMRouterCM::addOutput(MemoryBase* memory, string output) {
         VMStubsTEPHICM atmp(iseed, inner, vectmp);
         vmstubsTEPHI_.push_back(atmp);
       }
+
       if (!isTripletSeed) {
         tmp->resize(settings_.NLONGVMBINS() * settings_.nvmte(1, iseed));
         vmstubsTEPHI_[seedindex].vmstubmem[0].push_back(tmp);
@@ -349,6 +350,7 @@ void VMRouterCM::execute(unsigned int) {
         if (vmstubsMEPHI_[i] != nullptr)
           vmstubsMEPHI_[i]->addStub(vmstub, ivm * nvmmebins_ + vmbin);
       }
+
       //Fill the TE VM memories
       if (layerdisk_ >= N_LAYER && (!stub->isPSmodule()))
         continue;

@@ -80,7 +80,6 @@ void VMStubMERouter::execute(unsigned int) {
 
       FPGAWord allStubIndex(allStubCounter & ((1 << N_BITSMEMADDRESS) - 1), N_BITSMEMADDRESS, true, __LINE__, __FILE__);
       const Stub* stub = stubinput->getStub(i);
-
       allStubCounter++;
 
       for (auto& allstub : allstubs_) {
@@ -145,3 +144,4 @@ void VMStubMERouter::execute(unsigned int) {
     }
   }
 }
+
