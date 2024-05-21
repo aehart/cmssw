@@ -65,8 +65,6 @@ VMRouterCM::VMRouterCM(string name, Settings const& settings, Globals* global)
 
   nbitszfinebintable_ = settings_.vmrlutzbits(layerdisk_);
   nbitsrfinebintable_ = settings_.vmrlutrbits(layerdisk_);
-
-  nvmmebins_ = settings_.NLONGVMBINS() * ((layerdisk_ >= N_LAYER) ? 2 : 1);  //number of long z/r bins in VM
 }
 
 void VMRouterCM::addOutput(MemoryBase* memory, string output) {
@@ -151,12 +149,6 @@ void VMRouterCM::addOutput(MemoryBase* memory, string output) {
       } else {
         vmstubsTEPHI_[seedindex].vmstubmem[(vmbin - 1) & (settings_.nvmte(inner, iseed) - 1)].push_back(tmp);
       }
-
-    } else if (memory->getName().substr(3, 2) == "ME") {
-      VMStubsMEMemory* tmp = dynamic_cast<VMStubsMEMemory*>(memory);
-      assert(tmp != nullptr);
-      tmp->resize(nvmmebins_ * settings_.nvmme(layerdisk_));
-      vmstubsMEPHI_.push_back(tmp);
     } else {
       throw cms::Exception("LogicError") << __FILE__ << " " << __LINE__ << " memory: " << memory->getName()
                                          << " => should never get here!";
@@ -281,11 +273,6 @@ void VMRouterCM::execute(unsigned int) {
         allstub.second->addStub(stub);
       }
 
-      //Fill all the ME VM memories
-      unsigned int ivm =
-          iphi.bits(iphi.nbits() - (settings_.nbitsallstubs(layerdisk_) + settings_.nbitsvmme(layerdisk_)),
-                    settings_.nbitsvmme(layerdisk_));
-
       //Calculate the z and r position for the vmstub
 
       //Take the top nbitszfinebintable_ bits of the z coordinate
@@ -310,7 +297,6 @@ void VMRouterCM::execute(unsigned int) {
       assert(indexr < (1 << nbitsrfinebintable_));
 
       int melut = meTable_.lookup((indexz << nbitsrfinebintable_) + indexr);
-
       assert(melut >= 0);
 
       // The following indices are calculated in the same way as in the old
@@ -363,6 +349,9 @@ void VMRouterCM::execute(unsigned int) {
         if (vmstubsMEPHI_[i] != nullptr)
           vmstubsMEPHI_[i]->addStub(vmstub, ivm * nvmmebins_ + vmbin);
       }
+      //Fill the TE VM memories
+      if (layerdisk_ >= N_LAYER && (!stub->isPSmodule()))
+        continue;
 
       for (auto& ivmstubTEPHI : vmstubsTEPHI_) {
         unsigned int iseed = ivmstubTEPHI.seednumber;
