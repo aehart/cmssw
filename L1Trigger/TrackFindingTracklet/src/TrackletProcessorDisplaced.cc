@@ -183,8 +183,9 @@ void TrackletProcessorDisplaced::execute(unsigned int iSector, double phimin, do
         if (midallstub->isPSmodule()) {
           indexr = midallstub->r().value() >> (midallstub->r().nbits() - nbitsrfinebintable_);
         }
-      } else {  // else a layer
-        indexr = (((1 << (midallstub->r().nbits() - 1)) + midallstub->r().value()) >>
+      } else {
+        //Take the top nbitsfinebintable_ bits of the z coordinate. The & is to handle the negative z values.
+        indexr = (((1 << (midallstub->r().nbits() - 1)) + midallstub->rvalue()) >>
                   (midallstub->r().nbits() - nbitsrfinebintable_));
       }
 
