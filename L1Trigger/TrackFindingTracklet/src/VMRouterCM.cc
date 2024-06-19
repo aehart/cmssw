@@ -61,8 +61,10 @@ void VMRouterCM::addOutput(MemoryBase* memory, string output) {
   if (output.substr(0, 9) == "vmstubout") {
     if (memory->getName().substr(3, 2) == "TE") {
       VMStubsTEMemory* tmp = dynamic_cast<VMStubsTEMemory*>(memory);
-      unsigned int iseed = output[output.size() - 1] - '0';
-      assert(iseed < N_SEED_PROMPT);
+      const auto lastUnderscore = output.rfind('_');
+      const auto iseedStr = output.substr(lastUnderscore + 1);
+      unsigned int iseed = atoi(iseedStr.c_str());
+      assert(iseed < N_SEED);
 
       int seedindex = -1;
       for (unsigned int k = 0; k < vmstubsTEPHI_.size(); k++) {
