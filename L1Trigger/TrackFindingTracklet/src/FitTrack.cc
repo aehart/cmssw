@@ -17,6 +17,7 @@ FitTrack::FitTrack(string name, Settings const& settings, Globals* global)
     : ProcessBase(name, settings, global), trackfit_(nullptr) {}
 
 void FitTrack::addOutput(MemoryBase* memory, string output) {
+  std::cout << "    [" << __FILE__ << ":" << __LINE__ << "] calling addOutput for \"" << memory->getName() << "\" with port \"" << output << "\"" << std::endl; // HART
   if (settings_.writetrace()) {
     edm::LogVerbatim("Tracklet") << "In " << name_ << " adding output to " << memory->getName() << " to output "
                                  << output;

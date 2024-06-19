@@ -56,6 +56,8 @@ bool VMStubsTEMemory::addVMStub(VMStubTE vmstub, int longvmbin, int bin) {
   //If the pt of the stub is consistent with the allowed pt of tracklets
   //in that can be formed in this VM and the other VM used in the TE.
 
+  std::cout << "        [" << __FILE__ << ":" << __LINE__ << "] name: " << name_ << ", longvmbin: " << longvmbin << ", bin: " << bin << std::endl; // HART
+  std::cout << "        [" << __FILE__ << ":" << __LINE__ << "] stubsbinnedvm.size: " << stubsbinnedvm_.size() << std::endl; // HART
   if (settings_.combined()) {
     if (disk_ > 0) {
       assert(vmstub.stub()->isPSmodule());
@@ -170,6 +172,7 @@ bool VMStubsTEMemory::addVMStub(VMStubTE vmstub) {
     } else {
       if (vmstub.stub()->layerdisk() < N_LAYER) {
         if (!isinner_) {
+          std::cout << "        [" << __FILE__ << ":" << __LINE__ << "] name: " << name_ << ", bin: " << bin << std::endl; // HART
           stubsbinnedvm_[bin].push_back(vmstub);
         }
 
@@ -178,6 +181,7 @@ bool VMStubsTEMemory::addVMStub(VMStubTE vmstub) {
           assert(bin < 4);
           if (negdisk)
             bin += 4;
+          std::cout << "        [" << __FILE__ << ":" << __LINE__ << "] name: " << name_ << ", bin: " << bin << std::endl; // HART
           stubsbinnedvm_[bin].push_back(vmstub);
         }
       }
@@ -185,6 +189,7 @@ bool VMStubsTEMemory::addVMStub(VMStubTE vmstub) {
   } else {  //extended
     if (!isinner_) {
       if (layer_ > 0) {
+        std::cout << "        [" << __FILE__ << ":" << __LINE__ << "] name: " << name_ << ", bin: " << bin << std::endl; // HART
         stubsbinnedvm_[bin].push_back(vmstub);
       } else {
         if (overlap_) {
@@ -199,6 +204,7 @@ bool VMStubsTEMemory::addVMStub(VMStubTE vmstub) {
             bin += 1;
           }
         }
+        std::cout << "        [" << __FILE__ << ":" << __LINE__ << "] name: " << name_ << ", bin: " << bin << std::endl; // HART
         assert(bin < 4);
         if (negdisk)
           bin += 4;

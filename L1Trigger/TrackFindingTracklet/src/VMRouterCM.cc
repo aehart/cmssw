@@ -26,6 +26,7 @@ VMRouterCM::VMRouterCM(string name, Settings const& settings, Globals* global)
   overlapbits_ = 7;
   nextrabits_ = overlapbits_ - (settings_.nbitsallstubs(layerdisk_) + settings_.nbitsvmme(layerdisk_));
 
+  std::cout << "    [" << __FILE__ << ":" << __LINE__ << "] layerdisk: " << layerdisk_ << ", table type: " << TrackletLUT::VMRTableType::me << ", region: " << region << std::endl; // HART
   meTable_.initVMRTable(layerdisk_, TrackletLUT::VMRTableType::me, region);  //used for ME and outer TE barrel
 
   if (layerdisk_ == LayerDisk::D1 || layerdisk_ == LayerDisk::D2 || layerdisk_ == LayerDisk::D4) {
@@ -129,6 +130,7 @@ void VMRouterCM::execute(unsigned int) {
         continue;
 
       Stub* stub = stubinput->getStub(i);
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] stub r: " << stub->r().value() << ", stub z: " << stub->z().value() << ", stub phi: " << stub->phi().value() << std::endl; // HART
 
       //Note - below information is not part of the stub, but rather from which input memory
       //we are reading
@@ -239,6 +241,7 @@ void VMRouterCM::execute(unsigned int) {
       assert(indexz < (1 << nbitszfinebintable_));
       assert(indexr < (1 << nbitsrfinebintable_));
 
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] indexz: " << indexz << ", nbitsrfinebintable: " << nbitsrfinebintable_ << ", indexr: " << indexr << std::endl; // HART
       int melut = meTable_.lookup((indexz << nbitsrfinebintable_) + indexr);
 
       assert(melut >= 0);
@@ -246,6 +249,7 @@ void VMRouterCM::execute(unsigned int) {
       int vmbin = melut >> NFINERZBITS;
       if (negdisk)
         vmbin += (1 << NFINERZBITS);
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] melut: " << melut << std::endl; // HART
       int rzfine = melut & ((1 << NFINERZBITS) - 1);
 
       // pad disk PS bend word with a '0' in MSB so that all disk bends have 4 bits (for HLS compatibility)
@@ -253,12 +257,14 @@ void VMRouterCM::execute(unsigned int) {
       if (layerdisk_ >= N_LAYER)
         nbendbits = settings_.nbendbitsmedisk();
 
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] rzfine: " << rzfine << ", NFINERZBITS: " << NFINERZBITS << std::endl; // HART
       VMStubME vmstub(
           stub,
           stub->iphivmFineBins(settings_.nbitsallstubs(layerdisk_) + settings_.nbitsvmme(layerdisk_), NFINERZBITS),
           FPGAWord(rzfine, NFINERZBITS, true, __LINE__, __FILE__),
           FPGAWord(stub->bend().value(), nbendbits, true, __LINE__, __FILE__),
           allStubIndex);
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] stub fine rz: " << vmstub.finerz().value() << ", stub fine phi: " << vmstub.finephi().value() << ", bend: " << vmstub.bend().value() << std::endl; // HART
 
       if (vmstubsMEPHI_[0] != nullptr) {
         vmstubsMEPHI_[0]->addStub(vmstub, ivm * nvmmebins_ + vmbin);
@@ -288,15 +294,19 @@ void VMRouterCM::execute(unsigned int) {
 
         assert(lutval >= 0);
 
+        std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] lutval: " << lutval << ", lutwidth: " << lutwidth << std::endl; // HART
         FPGAWord binlookup(lutval, lutwidth, true, __LINE__, __FILE__);
 
         if (binlookup.value() < 0)
           continue;
 
+        std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] layerdisk: " << layerdisk_ << ", iseed: " << iseed << std::endl; // HART
+        std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] iphi.nbits: " << iphi.nbits() << ", nbitsallstubs: " << settings_.nbitsallstubs(layerdisk_) << ", nbitsvmte: " << settings_.nbitsvmte(1, iseed) << std::endl; // HART
         unsigned int ivmte =
             iphi.bits(iphi.nbits() - (settings_.nbitsallstubs(layerdisk_) + settings_.nbitsvmte(1, iseed)),
                       settings_.nbitsvmte(1, iseed));
 
+        std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] binlookup: " << binlookup.value() << std::endl; // HART
         int bin = binlookup.value() / 8;
         unsigned int tmp = binlookup.value() & 7;  //three bits in outer layers - this could be coded cleaner...
         binlookup.set(tmp, 3, true, __LINE__, __FILE__);
@@ -315,6 +325,7 @@ void VMRouterCM::execute(unsigned int) {
                                          << " regions bits " << settings_.nphireg(1, iseed) << " finephibits "
                                          << settings_.nfinephi(1, iseed);
           }
+          std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] ivmte: " << ivmte << ", NLONGVMBINS: " << settings_.NLONGVMBINS() << ", bin: " << bin << std::endl; // HART
           ivmstubTEPHI.vmstubmem[l]->addVMStub(tmpstub, ivmte * settings_.NLONGVMBINS(), bin);
         }
       }

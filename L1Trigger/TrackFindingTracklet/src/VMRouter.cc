@@ -194,6 +194,7 @@ void VMRouter::execute() {
       if (allStubCounter >= (1 << N_BITSMEMADDRESS))
         continue;
       Stub* stub = stubinput->getStub(i);
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] stub r: " << stub->r().value() << ", stub z: " << stub->z().value() << ", stub phi: " << stub->phi().value() << std::endl; // HART
 
       //Note - below information is not part of the stub, but rather from which input memory we are reading
       bool negdisk = (stub->disk().value() < 0);
@@ -342,17 +343,21 @@ void VMRouter::execute() {
 
         assert(lutval >= 0);
 
+        std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] lutval: " << lutval << ", lutwidth: " << lutwidth << std::endl; // HART
         FPGAWord binlookup(lutval, lutwidth, true, __LINE__, __FILE__);
 
         if (binlookup.value() < 0)
           continue;
 
+        std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] layerdisk: " << layerdisk_ << ", iseed: " << iseed << ", inner: " << inner << std::endl; // HART
+        std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] iphi.nbits: " << iphi.nbits() << ", nbitsallstubs: " << settings_.nbitsallstubs(layerdisk_) << ", nbitsvmte: " << settings_.nbitsvmte(inner, iseed) << std::endl; // HART
         unsigned int ivmte =
             iphi.bits(iphi.nbits() - (settings_.nbitsallstubs(layerdisk_) + settings_.nbitsvmte(inner, iseed)),
                       settings_.nbitsvmte(inner, iseed));
 
         int bin = -1;
         if (inner != 0) {
+          std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] binlookup: " << binlookup.value() << std::endl; // HART
           bin = binlookup.value() / 8;
           unsigned int tmp = binlookup.value() & 7;  //three bits in outer layers - this could be coded cleaner...
           binlookup.set(tmp, 3, true, __LINE__, __FILE__);
@@ -376,6 +381,7 @@ void VMRouter::execute() {
           if (inner == 0) {
             ivmstubTEPHI.vmstubmem[ivmte][l]->addVMStub(tmpstub);
           } else {
+            std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] ivmte: " << ivmte << ", bin: " << bin << std::endl; // HART
             ivmstubTEPHI.vmstubmem[ivmte][l]->addVMStub(tmpstub, 0, bin);
           }
         }

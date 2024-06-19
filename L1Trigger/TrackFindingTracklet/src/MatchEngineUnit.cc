@@ -118,16 +118,22 @@ void MatchEngineUnit::processPipeline() {
     int stubfinephi = vmstub____.finephi().value();
     bool isPSmodule = false;
 
+    std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] stub r: " << vmstub____.stub()->r().value() << ", stub z: " << vmstub____.stub()->z().value() << ", stub phi: " << vmstub____.stub()->phi().value() << std::endl; // HART
     if (barrel_) {
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] layerdisk: " << layerdisk_ << ", N_PSLAYER: " << N_PSLAYER << std::endl; // HART
       isPSmodule = layerdisk_ < N_PSLAYER;
     } else {
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] MEBinsBits: " << settings_.MEBinsBits() << std::endl; // HART
       const int absz = (1 << settings_.MEBinsBits()) - 1;
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] rzbin____: " << rzbin____ << ", absz: " << absz << ", NFINERZBITS: " << NFINERZBITS << ", stubfinerz: " << stubfinerz << std::endl; // HART
       unsigned int irstub = ((rzbin____ & absz) << NFINERZBITS) + stubfinerz;
 
       //Verify that ir2smin_ is initialized and check if irstub is less than radius of innermost 2s module
       assert(ir2smin_ > 0);
+      std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] irstub: " << irstub << ", ir2smin: " << ir2smin_ << std::endl; // HART
       isPSmodule = irstub < ir2smin_;
     }
+    std::cout << "      [" << __FILE__ << ":" << __LINE__ << "] isPSmodule: " << isPSmodule << ", vmstub____.isPSmodule: " << vmstub____.isPSmodule() << std::endl; // HART
     assert(isPSmodule == vmstub____.isPSmodule());
 
     int deltaphi = stubfinephi - projfinephi____;
