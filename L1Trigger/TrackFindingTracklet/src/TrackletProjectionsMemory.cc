@@ -34,7 +34,9 @@ void TrackletProjectionsMemory::addProj(Tracklet* tracklet, unsigned int page) {
 
   hasProj_ = true;
 
-  tracklets_[page].push_back(tracklet);
+  if (tracklets_[page].size()<(1<<(N_BITSMEMADDRESS-1))-1) {
+    tracklets_[page].push_back(tracklet);
+  }
 }
 
 void TrackletProjectionsMemory::clean() {

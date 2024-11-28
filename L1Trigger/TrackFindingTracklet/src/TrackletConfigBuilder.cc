@@ -633,7 +633,8 @@ std::string TrackletConfigBuilder::PRName(unsigned int ilayer, unsigned int ireg
     return "PR_" + LayerName(ilayer) + "PHI" + iTCStr(ireg);
   }
 }
-/*
+
+
 void TrackletConfigBuilder::writeProjectionMemories(std::ostream& os, std::ostream& memories, std::ostream&) {
   // Each TC (e.g. TC_L1L2D) writes a projection memory (TPROJ) for each layer the seed projects to,
   // with name indicating the TC and which layer & phi region it projects to (e.g. TPROJ_L1L2D_L3PHIA).
@@ -711,7 +712,7 @@ void TrackletConfigBuilder::writeProjectionMemories(std::ostream& os, std::ostre
       }
     }
   }
-}*/
+}
 
 void TrackletConfigBuilder::writeMergedProjectionMemories(std::ostream& os, std::ostream& memories, std::ostream& process) {
   // Writed the merged projection memories as produced by the ProjectionCalculator mdoels
@@ -1303,9 +1304,9 @@ void TrackletConfigBuilder::writeVMSMemories(std::ostream& os, std::ostream& mem
                << " output=> MP_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstubin" << std::endl;
           }
         } else {  // non duplicate MPs configuration
-          memories << "VMStubsME: VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1 [18]" << std::endl;
-          os << "VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n1"
-             << " input=> VMR_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstuboutPHI" << iTCStr(iReg)
+          memories << "VMStubsME: VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n2 [18]" << std::endl;
+          os << "VMSME_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << "n2"
+             << " input=> VMSMER_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstubout"
              << " output=> MP_" << LayerName(ilayer) << "PHI" << iTCStr(iReg) << ".vmstubin" << std::endl;
         }
       }
@@ -1553,7 +1554,7 @@ void TrackletConfigBuilder::writeAll(std::ostream& wires, std::ostream& memories
   writeVMSMemories(wires, memories, modules);
   writeSPMemories(wires, memories, modules);
   writeMergedProjectionMemories(wires, memories, modules);
-  //writeProjectionMemories(wires, memories, modules);
+  writeProjectionMemories(wires, memories, modules);
   writeTPARMemories(wires, memories, modules);
   writeVMPROJMemories(wires, memories, modules);
   writeAPMemories(wires, memories, modules);

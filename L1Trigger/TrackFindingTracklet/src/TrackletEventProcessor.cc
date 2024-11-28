@@ -300,15 +300,6 @@ void TrackletEventProcessor::event(SLHCEvent& ev,
       sector_->writeAS(first);
     }
 
-    // VMStub ME Router
-    VMSMERTimer_.start();
-    sector_->executeVMSMER();
-    VMSMERTimer_.stop();
-    if (settings_->writeMem() && k == settings_->writememsect()) {
-      sector_->writeVMSME(first);
-      sector_->writeAS(first);
-    }
-
     // match processor (alternative to ME+MC)
     MPTimer_.start();
     sector_->executeMP();

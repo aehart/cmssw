@@ -136,6 +136,11 @@ void ProjectionCalculator::addInput(MemoryBase* memory, string input) {
     return;
   }
 
+  if (input == "projin" ) {
+    //Hack to keep projection in config but ignore here
+    return;
+  }
+
   throw cms::Exception("BadConfig") << __FILE__ << " " << __LINE__ << " could not find input: " << input;
 }
 
@@ -150,7 +155,7 @@ void ProjectionCalculator::execute() {
 
     for (int iSeed = 0; iSeed < 8; ++iSeed){
       std::string seed = iname.substr(5, 4); // extract seed from name 
-      bool overlap = (iSeed >= 6);
+      bool psSeed = !(iSeed == Seed::L3L4 || iSeed == Seed::L5L6 );
       if (seed == seedNames[iSeed]){ // FIXME find easier way to get iSeed (probably from seed name)
       unsigned int numTCs = nMergedTC[iSeed];
       for(unsigned int iTC = 0; iTC < numTCs; ++iTC){
@@ -270,7 +275,7 @@ void ProjectionCalculator::execute() {
                             zprojlayer,
                             phiderlayer,
                             zderlayer,
-                            overlap);
+                            psSeed);
           addedLayer[layer - 1] = true;
         }
       }
@@ -310,7 +315,7 @@ void ProjectionCalculator::execute() {
                             rprojdisk,
                             phiderdisk,
                             rderdisk,
-                            overlap);
+                            psSeed);
         }
       }
       
