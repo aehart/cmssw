@@ -180,9 +180,9 @@ void TrackletProcessorDisplaced::execute(unsigned int iSector, double phimin, do
       if (layerdisk1_ >= LayerDisk::D1) {               // if a disk
         if (negdisk)
           indexz = (1 << nbitszfinebintable_) - indexz;
-        indexr = midallstub->r().value();
+        indexr = midallstub->rvalue();
         if (midallstub->isPSmodule()) {
-          indexr = midallstub->r().value() >> (midallstub->r().nbits() - nbitsrfinebintable_);
+          indexr = midallstub->rvalue() >> (midallstub->r().nbits() + 1 - nbitsrfinebintable_);
         }
       } else {
         //Take the top nbitsfinebintable_ bits of the z coordinate. The & is to handle the negative z values.
