@@ -67,12 +67,15 @@ for filePath in options.inputFiles:
 
 process = cms.Process("GTTFileWriter")
 
-process.load('Configuration.Geometry.GeometryExtendedRun4D88Reco_cff')
-process.load('Configuration.Geometry.GeometryExtendedRun4D88_cff')
+#process.load('Configuration.Geometry.GeometryExtendedRun4D88Reco_cff')
+#process.load('Configuration.Geometry.GeometryExtendedRun4D88_cff')
+# Use D110 geometry
+process.load('Configuration.Geometry.GeometryExtendedRun4D110Reco_cff')
+process.load('Configuration.Geometry.GeometryExtendedRun4D110_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '140X_mcRun4_realistic_v4', '')
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 process.source = cms.Source("PoolSource",
@@ -92,8 +95,10 @@ process.load('L1Trigger.L1TTrackMatch.l1tTrackVertexAssociationProducer_cfi')
 process.load('L1Trigger.L1TTrackMatch.l1tTrackJetsEmulation_cfi')
 process.load('L1Trigger.L1TTrackMatch.l1tTrackerEmuHTMiss_cfi')
 process.load('L1Trigger.L1TTrackMatch.l1tTrackerEmuEtMiss_cfi')
+process.load('L1Trigger.L1TTrackMatch.l1tTrackTripletEmulation_cfi')
 process.load('L1Trigger.DemonstratorTools.l1tGTTFileWriter_cfi')
 process.load('L1Trigger.DemonstratorTools.l1tGTTFileReader_cfi')
+
 
 process.l1tGTTFileReader.processOutputToCorrelator = cms.bool((options.vertices in ['load', 'overwrite']))
 process.l1tGTTFileReader.processInputTracks = cms.bool((options.tracks in ['load', 'overwrite']))
@@ -164,6 +169,7 @@ process.l1tGTTFileWriter.vertexAssociatedTracks = cms.untracked.InputTag("l1tTra
 process.l1tGTTFileWriter.jets = cms.untracked.InputTag("l1tTrackJetsEmulation","L1TrackJets")
 process.l1tGTTFileWriter.htmiss = cms.untracked.InputTag("l1tTrackerEmuHTMiss", "L1TrackerEmuHTMiss")
 process.l1tGTTFileWriter.etmiss = cms.untracked.InputTag("l1tTrackerEmuEtMiss", "L1TrackerEmuEtMiss")
+process.l1tGTTFileWriter.triplets = cms.untracked.InputTag("l1tTrackTripletEmulation", "L1TrackTripletWord")
 process.l1tGTTFileWriter.outputCorrelatorFilename = cms.untracked.string("L1GTTOutputToCorrelatorFile")
 process.l1tGTTFileWriter.outputGlobalTriggerFilename = cms.untracked.string("L1GTTOutputToGlobalTriggerFile")
 process.l1tGTTFileWriter.selectedTracksFilename = cms.untracked.string("L1GTTSelectedTracksFile")
@@ -187,5 +193,6 @@ process.p.associate(cms.Task(process.l1tGTTInputProducer,
                              process.l1tTrackSelectionProducerForEtMiss,
                              process.l1tTrackVertexAssociationProducerForEtMiss,
                              process.l1tTrackerEmuEtMiss,
+                             process.l1tTrackTripletEmulation,
                          )
                 )

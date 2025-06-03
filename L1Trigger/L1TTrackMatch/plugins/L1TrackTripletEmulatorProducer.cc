@@ -31,6 +31,7 @@
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/Common/interface/RefVector.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 //own headers
 #include "L1TrackUnpacker.h"
@@ -242,14 +243,15 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
   math::PtEtaPhiMLorentzVectorD pion1(trk1.Pt, trk1.Eta, trk1.Phi, trk1_mass_);
   math::PtEtaPhiMLorentzVectorD pion2(trk2.Pt, trk2.Eta, trk2.Phi, trk2_mass_);
   math::PtEtaPhiMLorentzVectorD pion3(trk3.Pt, trk3.Eta, trk3.Phi, trk3_mass_);
-
+  
+  double triplet_eta = (pion1 + pion2 + pion3).Eta();
   bool event_pass = true;
 
   // create triplets
   double triplet_mass = (pion1 + pion2 + pion3).M();
   if (triplet_mass > triplet_massOver_)
     triplet_mass = triplet_massOver_;
-  double triplet_eta = (pion1 + pion2 + pion3).Eta();
+
   double triplet_pt = (pion1 + pion2 + pion3).Pt();
   int triplet_charge = trk1.Charge + trk2.Charge + trk3.Charge;
   std::vector<double> pair_masses{(pion1 + pion2).M(), (pion2 + pion3).M(), (pion1 + pion3).M()};
@@ -257,6 +259,7 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
   std::vector<double> pair_dzs{fabs(trk1.Z0 - trk2.Z0), fabs(trk2.Z0 - trk3.Z0), fabs(trk1.Z0 - trk3.Z0)};
   std::sort(pair_dzs.begin(), pair_dzs.end(), [](auto &a, auto &b) { return a > b; });
 
+  /** 
   //triplet selection
   if (triplet_mass < triplet_massMin_ || triplet_mass > triplet_massMax_)
     event_pass = false;
@@ -274,8 +277,9 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
     event_pass = false;
   if (pair_dzs[0] < pair1_dzMin_ || pair_dzs[0] > pair1_dzMax_)
     event_pass = false;
+  */
 
-  if (!event_pass) {
+  if (! event_pass) {
     iEvent.put(std::move(L1TrackTripletContainer), OutputDigisName);
     iEvent.put(std::move(L1TrackTripletWordContainer), OutputWordName);
     return;
@@ -300,52 +304,13 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
 
   // bit assignment
   l1t::TkTripletWord::valid_t val = 1;
-  l1t::TkTripletWord::pt_t bitPt = pt_intern((pion1 + pion2 + pion3).Pt());
-  l1t::TkTripletWord::glbeta_t bitEta =
-      DoubleToBit((pion1 + pion2 + pion3).Eta(),
-                  TkTripletWord::TkTripletBitWidths::kGlbEtaSize,
-                  TkTripletWord::MAX_ETA / (1 << TkTripletWord::TkTripletBitWidths::kGlbEtaSize));
-  l1t::TkTripletWord::glbphi_t bitPhi =
-      DoubleToBit((pion1 + pion2 + pion3).Phi(),
-                  TkTripletWord::TkTripletBitWidths::kGlbPhiSize,
-                  (2. * std::abs(M_PI)) / (1 << TkTripletWord::TkTripletBitWidths::kGlbPhiSize));
-  l1t::TkTripletWord::charge_t bitCharge =
-      DoubleToBit(double(triplet_charge),
-                  TkTripletWord::TkTripletBitWidths::kChargeSize,
-                  TkTripletWord::MAX_CHARGE / (1 << TkTripletWord::TkTripletBitWidths::kChargeSize));
   l1t::TkTripletWord::mass_t bitMass =
       DoubleToBit((pion1 + pion2 + pion3).M(),
                   TkTripletWord::TkTripletBitWidths::kMassSize,
                   TkTripletWord::MAX_MASS / (1 << TkTripletWord::TkTripletBitWidths::kMassSize));
-  l1t::TkTripletWord::ditrack_minmass_t bitDiTrackMinMass =
-      DoubleToBit(pair_masses[2],
-                  TkTripletWord::TkTripletBitWidths::kDiTrackMinMassSize,
-                  TkTripletWord::MAX_MASS / (1 << TkTripletWord::TkTripletBitWidths::kDiTrackMinMassSize));
-  l1t::TkTripletWord::ditrack_maxmass_t bitDiTrackMaxMass =
-      DoubleToBit(pair_masses[0],
-                  TkTripletWord::TkTripletBitWidths::kDiTrackMaxMassSize,
-                  TkTripletWord::MAX_MASS / (1 << TkTripletWord::TkTripletBitWidths::kDiTrackMaxMassSize));
-
-  l1t::TkTripletWord::ditrack_minz0_t bitDiTrackMinZ0 =
-      DoubleToBit(pair_dzs[2],
-                  TkTripletWord::TkTripletBitWidths::kDiTrackMinZ0Size,
-                  TkTripletWord::MAX_Z0 / (1 << TkTripletWord::TkTripletBitWidths::kDiTrackMinZ0Size));
-  l1t::TkTripletWord::ditrack_maxz0_t bitDiTrackMaxZ0 =
-      DoubleToBit(pair_dzs[0],
-                  TkTripletWord::TkTripletBitWidths::kDiTrackMaxZ0Size,
-                  TkTripletWord::MAX_Z0 / (1 << TkTripletWord::TkTripletBitWidths::kDiTrackMaxZ0Size));
-
   l1t::TkTripletWord::unassigned_t unassigned = 0;
   l1t::TkTripletWord bitTriplet(val,
-                                bitPt,
-                                bitEta,
-                                bitPhi,
                                 bitMass,
-                                bitCharge,
-                                bitDiTrackMinZ0,
-                                bitDiTrackMaxMass,
-                                bitDiTrackMinZ0,
-                                bitDiTrackMaxZ0,
                                 unassigned);
 
   L1TrackTripletWordContainer->push_back(bitTriplet);
