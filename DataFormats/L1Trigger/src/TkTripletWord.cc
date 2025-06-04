@@ -5,7 +5,7 @@
 
 namespace l1t {
   TkTripletWord::TkTripletWord(valid_t valid,
-                               mass_t mass,
+                               WMass_t mass,
                                unassigned_t unassigned) {
     setTkTripletWord(valid, mass, unassigned);
   }
@@ -21,7 +21,7 @@ namespace l1t {
   }
 
   void TkTripletWord::setTkTripletWord(valid_t valid,
-                                       mass_t mass,
+                                       WMass_t mass,
                                        unassigned_t unassigned) {
     // pack the TkTriplet word
     unsigned int offset = 0;

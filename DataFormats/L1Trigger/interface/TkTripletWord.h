@@ -22,12 +22,13 @@ namespace l1t {
     static constexpr double MAX_CHARGE = 3.;
     static constexpr double MAX_Z0 = 25.;
 
-    // Total size: 139
+    // Original total size: 139
     enum TkTripletBitWidths {
       // The sizes of the triplet word components and total word size
-      kValidSize = 1,  // Width of the valid bit
-      kMassSize = 16,            // Width of the triplet mass
-      kUnassignedSize = 122,
+      kValidSize = 1,           // Width of the valid bit
+      kMassSize = 23,           // Width of the entire triplet mass
+      kMassMagSize = 17,        // Width of the triplet mass magnitude
+      kUnassignedSize = 40,
       kTkTripletWordSize = kValidSize + kMassSize + kUnassignedSize,
     };
 
@@ -41,9 +42,9 @@ namespace l1t {
       kUnassignedMSB = kUnassignedLSB + TkTripletBitWidths::kUnassignedSize - 1,
     };
 
-    // vertex parameters types
-    typedef ap_uint<kValidSize> valid_t;                          //valid
-    typedef ap_int<kMassSize> mass_t;                             //triplet mass
+    // ap parameter types
+    typedef ap_uint<kValidSize> valid_t;                                             //valid
+    typedef ap_ufixed<kMassSize, kMassMagSize, AP_RND_CONV, AP_SAT> WMass_t;          //triplet mass
     typedef ap_uint<TkTripletBitWidths::kUnassignedSize> unassigned_t;
     typedef std::bitset<TkTripletBitWidths::kTkTripletWordSize> tktripletword_bs_t;
     typedef ap_uint<TkTripletBitWidths::kTkTripletWordSize> tktripletword_t;
@@ -52,7 +53,7 @@ namespace l1t {
     // ----------Constructors --------------------------
     TkTripletWord() {}
     TkTripletWord(valid_t valid,
-                  mass_t mass,
+                  WMass_t mass,
                   unassigned_t unassigned);
 
     ~TkTripletWord() {}
@@ -71,8 +72,8 @@ namespace l1t {
     valid_t validWord() const {
       return tkTripletWord()(TkTripletBitLocations::kValidMSB, TkTripletBitLocations::kValidLSB);
     }
-    mass_t massWord() const {
-      mass_t ret;
+    WMass_t massWord() const {
+      WMass_t ret;
       ret.V = tkTripletWord()(TkTripletBitLocations::kMassMSB, TkTripletBitLocations::kMassLSB);
       return ret;
     }
@@ -98,7 +99,7 @@ namespace l1t {
 
     // ----------member functions (setters) ------------
     void setTkTripletWord(valid_t valid,
-                          mass_t mass,
+                          WMass_t wMass,
                           unassigned_t unassigned);
 
     template <class packVarType>

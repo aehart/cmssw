@@ -4,9 +4,11 @@
 namespace l1t::demo::codecs {
 
   ap_uint<64> encodeTriplet(const l1t::TkTripletWord& t) {
+    l1ttripletemu::TkTriplet tkTriplet;
+    tkTriplet.mW = t.massWord();
     ap_uint<1> valid = (t.validWord());
-    ap_uint<64 - (l1t::TkTripletWord::kMassSize + 1)> unassigned = 0;
-    ap_uint<64> tripletWord = (unassigned, t.massWord(), valid);
+    ap_uint<64 - (l1ttripletemu::kMassSize + 1)> unassigned = 0;
+    ap_uint<64> tripletWord = (unassigned, tkTriplet.mW.range(), valid);
     return tripletWord;
   }
 

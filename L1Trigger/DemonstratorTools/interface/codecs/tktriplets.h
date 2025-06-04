@@ -10,6 +10,7 @@
 #include "DataFormats/L1TCorrelator/interface/TkTriplet.h"
 #include "DataFormats/L1TCorrelator/interface/TkTripletFwd.h"
 #include "DataFormats/L1Trigger/interface/TkTripletWord.h"
+#include "L1Trigger/L1TTrackMatch/interface/TkTripletEmuAlgo.h"
 
 namespace l1t::demo::codecs {
 

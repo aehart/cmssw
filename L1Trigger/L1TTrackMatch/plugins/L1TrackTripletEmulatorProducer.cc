@@ -18,6 +18,7 @@
 #include "DataFormats/L1TrackTrigger/interface/TTTrack_TrackWord.h"
 #include "DataFormats/L1Trigger/interface/VertexWord.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "L1Trigger/L1TTrackMatch/interface/TkTripletEmuAlgo.h"
 
 // system include files
 #include "DataFormats/Common/interface/Handle.h"
@@ -302,18 +303,16 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
 
   iEvent.put(std::move(L1TrackTripletContainer), OutputDigisName);
 
-  // bit assignment
+  // Test vector outputs
   l1t::TkTripletWord::valid_t val = 1;
-  l1t::TkTripletWord::mass_t bitMass =
-      DoubleToBit((pion1 + pion2 + pion3).M(),
-                  TkTripletWord::TkTripletBitWidths::kMassSize,
-                  TkTripletWord::MAX_MASS / (1 << TkTripletWord::TkTripletBitWidths::kMassSize));
+  l1ttripletemu::TkTriplet tkTriplet;
+  //tkTriplet.mW = l1ttripletemu::doubleToUFixedMass((pion1 + pion2 + pion3).M());  
+  tkTriplet.mW = (pion1 + pion2 + pion3).M(); 
   l1t::TkTripletWord::unassigned_t unassigned = 0;
-  l1t::TkTripletWord bitTriplet(val,
-                                bitMass,
-                                unassigned);
 
-  L1TrackTripletWordContainer->push_back(bitTriplet);
+  l1t::TkTripletWord L1Triplet(val, tkTriplet.mW.range(), unassigned);
+
+  L1TrackTripletWordContainer->push_back(L1Triplet);
 
   iEvent.put(std::move(L1TrackTripletWordContainer), OutputWordName);
 }
