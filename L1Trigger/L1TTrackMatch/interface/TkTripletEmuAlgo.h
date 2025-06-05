@@ -33,7 +33,5 @@ namespace l1ttripletemu {
         WMass_t mW;
     };
 
-    WMass_t doubleToUFixedMass(double emuWMass);
-
 }  // namespace l1ttripletemu
 #endif
