@@ -22,7 +22,6 @@ namespace l1t {
     static constexpr double MAX_CHARGE = 3.;
     static constexpr double MAX_Z0 = 25.;
 
-    // Original total size: 139
     enum TkTripletBitWidths {
       // The sizes of the triplet word components and total word size
       kValidSize = 1,           // Width of the valid bit

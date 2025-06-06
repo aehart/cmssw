@@ -280,7 +280,7 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
     event_pass = false;
   */
 
-  if (! event_pass) {
+  if (!event_pass) {
     iEvent.put(std::move(L1TrackTripletContainer), OutputDigisName);
     iEvent.put(std::move(L1TrackTripletWordContainer), OutputWordName);
     return;
@@ -305,12 +305,12 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
 
   // Test vector outputs
   l1t::TkTripletWord::valid_t val = 1;
-  l1ttripletemu::TkTriplet tkTriplet;
-  //tkTriplet.mW = l1ttripletemu::doubleToUFixedMass((pion1 + pion2 + pion3).M());  
+  l1ttripletemu::TkTriplet tkTriplet;  
   tkTriplet.mW = (pion1 + pion2 + pion3).M(); 
   l1t::TkTripletWord::unassigned_t unassigned = 0;
 
   l1t::TkTripletWord L1Triplet(val, tkTriplet.mW.range(), unassigned);
+  //std::cout << "W Mass (triplet word)" << L1Triplet.massWord().to_string(2).c_str() << std::endl;
 
   L1TrackTripletWordContainer->push_back(L1Triplet);
 
