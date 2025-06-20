@@ -307,32 +307,32 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         // Triplet invariant mass calculation
         if (this_l1track == nTracks-1) {
             // Check that all triplet tracks are valid
-            if (trk1.Pt == 0 || trk2.Pt == 0 || trk3.Pt == 0) { break; }
+            if (trk1.f_Pt == 0 || trk2.f_Pt == 0 || trk3.f_Pt == 0) { break; }
         
             // Define sinh LUT indices
-            const l1ttripletemu::sinh_lut_index_t sinhIndex1 = (l1ttripletemu::sinh_lut_index_t) ((std::abs((float) trk1.Eta)) / (2.5 / (1 << l1ttripletemu::kSinhLUTTableSize))+1);
-            const l1ttripletemu::sinh_lut_index_t sinhIndex2 = (l1ttripletemu::sinh_lut_index_t) ((std::abs((float) trk2.Eta)) / (2.5 / (1 << l1ttripletemu::kSinhLUTTableSize))+1);
-            const l1ttripletemu::sinh_lut_index_t sinhIndex3 = (l1ttripletemu::sinh_lut_index_t) ((std::abs((float) trk3.Eta)) / (2.5 / (1 << l1ttripletemu::kSinhLUTTableSize))+1);
+            const l1ttripletemu::sinh_lut_index_t sinhIndex1 = (l1ttripletemu::sinh_lut_index_t) ((std::abs((float) trk1.f_Eta)) / (2.5 / (1 << l1ttripletemu::kSinhLUTTableSize))+1);
+            const l1ttripletemu::sinh_lut_index_t sinhIndex2 = (l1ttripletemu::sinh_lut_index_t) ((std::abs((float) trk2.f_Eta)) / (2.5 / (1 << l1ttripletemu::kSinhLUTTableSize))+1);
+            const l1ttripletemu::sinh_lut_index_t sinhIndex3 = (l1ttripletemu::sinh_lut_index_t) ((std::abs((float) trk3.f_Eta)) / (2.5 / (1 << l1ttripletemu::kSinhLUTTableSize))+1);
 
             // Define cosh LUT indices
-            const l1ttripletemu::cosh_lut_index_t coshIndex1 = (l1ttripletemu::cosh_lut_index_t) ((std::abs((float) trk1.Eta)) / (2.5 / (1 << l1ttripletemu::kCoshLUTTableSize))+1);
-            const l1ttripletemu::cosh_lut_index_t coshIndex2 = (l1ttripletemu::cosh_lut_index_t) ((std::abs((float) trk2.Eta)) / (2.5 / (1 << l1ttripletemu::kCoshLUTTableSize))+1);
-            const l1ttripletemu::cosh_lut_index_t coshIndex3 = (l1ttripletemu::cosh_lut_index_t) ((std::abs((float) trk3.Eta)) / (2.5 / (1 << l1ttripletemu::kCoshLUTTableSize))+1);
+            const l1ttripletemu::cosh_lut_index_t coshIndex1 = (l1ttripletemu::cosh_lut_index_t) ((std::abs((float) trk1.f_Eta)) / (2.5 / (1 << l1ttripletemu::kCoshLUTTableSize))+1);
+            const l1ttripletemu::cosh_lut_index_t coshIndex2 = (l1ttripletemu::cosh_lut_index_t) ((std::abs((float) trk2.f_Eta)) / (2.5 / (1 << l1ttripletemu::kCoshLUTTableSize))+1);
+            const l1ttripletemu::cosh_lut_index_t coshIndex3 = (l1ttripletemu::cosh_lut_index_t) ((std::abs((float) trk3.f_Eta)) / (2.5 / (1 << l1ttripletemu::kCoshLUTTableSize))+1);
             
             // Total track momenta
-            l1ttripletemu::pxyz_t p1 = (l1ttripletemu::pxyz_t) trk1.Pt * coshLUT_[coshIndex1];
-            l1ttripletemu::pxyz_t p2 = (l1ttripletemu::pxyz_t) trk2.Pt * coshLUT_[coshIndex2];
-            l1ttripletemu::pxyz_t p3 = (l1ttripletemu::pxyz_t) trk3.Pt * coshLUT_[coshIndex3];
+            l1ttripletemu::pxyz_t p1 = (l1ttripletemu::pxyz_t) trk1.f_Pt * coshLUT_[coshIndex1];
+            l1ttripletemu::pxyz_t p2 = (l1ttripletemu::pxyz_t) trk2.f_Pt * coshLUT_[coshIndex2];
+            l1ttripletemu::pxyz_t p3 = (l1ttripletemu::pxyz_t) trk3.f_Pt * coshLUT_[coshIndex3];
 
             // Z-component track momenta
-            l1ttripletemu::pxyz_t pz1 = (l1ttripletemu::pxyz_t) trk1.Pt * sinhLUT_[coshIndex1];
-            l1ttripletemu::pxyz_t pz2 = (l1ttripletemu::pxyz_t) trk2.Pt * sinhLUT_[coshIndex2];
-            l1ttripletemu::pxyz_t pz3 = (l1ttripletemu::pxyz_t) trk3.Pt * sinhLUT_[coshIndex3];
+            l1ttripletemu::pxyz_t pz1 = (l1ttripletemu::pxyz_t) trk1.f_Pt * sinhLUT_[coshIndex1];
+            l1ttripletemu::pxyz_t pz2 = (l1ttripletemu::pxyz_t) trk2.f_Pt * sinhLUT_[coshIndex2];
+            l1ttripletemu::pxyz_t pz3 = (l1ttripletemu::pxyz_t) trk3.f_Pt * sinhLUT_[coshIndex3];
 
             // Correct pz sign if eta is negative
-            if (trk1.Eta < 0) { pz1 = -1 * pz1; }
-            if (trk2.Eta < 0) { pz2 = -1 * pz2; }
-            if (trk3.Eta < 0) { pz3 = -1 * pz3; }
+            if (trk1.f_Eta < 0) { pz1 = -1 * pz1; }
+            if (trk2.f_Eta < 0) { pz2 = -1 * pz2; }
+            if (trk3.f_Eta < 0) { pz3 = -1 * pz3; }
 
             // Momentum x,y component definitions
             l1ttripletemu::pxyz_t px1 = 0, py1 = 0;
@@ -351,53 +351,53 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                     const l1ttripletemu::cosh_lut_index_t cosIndex = (tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
                     const l1ttripletemu::cosh_lut_index_t sinIndex = (phiQuadrants_[1] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
-                        px1 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex];
-                        py1 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex];
+                        px1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
+                        py1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     } else if (tk == 1) {
-                        px2 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex];
-                        py2 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex];
+                        px2 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
+                        py2 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     } else if (tk == 2) {
-                        px3 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex];
-                        py3 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex];
+                        px3 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
+                        py3 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     }
                 } else if (tmp_trk.globalPhi >= phiQuadrants_[1] && tmp_trk.globalPhi < phiQuadrants_[2]) {
                     const l1ttripletemu::cosh_lut_index_t cosIndex = (phiQuadrants_[2] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
                     const l1ttripletemu::cosh_lut_index_t sinIndex = (tmp_trk.globalPhi - phiQuadrants_[1]) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
-                        px1 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex]);
-                        py1 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex];
+                        px1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
+                        py1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     } else if (tk == 1) {
-                        px2 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex]);
-                        py2 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex];
+                        px2 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
+                        py2 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     } else if (tk == 2) {
-                        px3 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex]);
-                        py3 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex];
+                        px3 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
+                        py3 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     }
                 } else if (tmp_trk.globalPhi >= phiQuadrants_[2] && tmp_trk.globalPhi < phiQuadrants_[3]) {
                     const l1ttripletemu::cosh_lut_index_t cosIndex = (tmp_trk.globalPhi - phiQuadrants_[2]) >> l1ttripletemu::kCosLUTShift;
                     const l1ttripletemu::cosh_lut_index_t sinIndex = (phiQuadrants_[3] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
-                        px1 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex]);
-                        py1 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex]);
+                        px1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
+                        py1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     } else if (tk == 1) {
-                        px2 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex]);
-                        py2 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex]);
+                        px2 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
+                        py2 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     } else if (tk == 2) {
-                        px3 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex]);
-                        py3 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex]);
+                        px3 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
+                        py3 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     }
                 } else if (tmp_trk.globalPhi >= phiQuadrants_[3] && tmp_trk.globalPhi < phiQuadrants_[4]) {
                     const l1ttripletemu::cosh_lut_index_t cosIndex = (phiQuadrants_[4] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
                     const l1ttripletemu::cosh_lut_index_t sinIndex = (tmp_trk.globalPhi - phiQuadrants_[3]) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
-                        px1 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex];
-                        py1 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex]);
+                        px1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
+                        py1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     } else if (tk == 1) {
-                        px2 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex];
-                        py2 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex]);
+                        px2 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
+                        py2 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     } else if (tk == 2) {
-                        px3 = (l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[cosIndex];
-                        py3 = -((l1ttripletemu::pxyz_t) tmp_trk.Pt * cosLUT_[sinIndex]);
+                        px3 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
+                        py3 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     }
                 }    
             }
@@ -408,7 +408,6 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                 - (px1 + px2 + px3)*(px1 + px2 + px3)
                 - (py1 + py2 + py3)*(py1 + py2 + py3)
                 - (pz1 + pz2 + pz3)*(pz1 + pz2 + pz3) );
-
         }
     }
     
@@ -488,24 +487,26 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         // Test vector outputs
         l1t::TkTripletWord::valid_t val = 1;
         l1ttripletemu::TkTriplet tkTriplet;  
-        tkTriplet.mW = (pion1 + pion2 + pion3).M(); 
+        tkTriplet.mW = f_WMass; 
         l1t::TkTripletWord::unassigned_t unassigned = 0;
         
         l1t::TkTripletWord L1Triplet(val, tkTriplet.mW.range(), unassigned);
-        //std::cout << "W Mass (triplet word)" << L1Triplet.massWord().to_string(2).c_str() << std::endl;
+
+        /*
         constexpr char const* RED    = "\033[31m";
         constexpr char const* GREEN  = "\033[32m";
         constexpr char const* RESET  = "\033[0m";
 
         std::cout << "W Mass (float)    " << (pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M() << std::endl;
         std::cout << "W Mass (firmware) " << f_WMass.to_string(10).c_str() << std::endl;
-        
-        double mass_diff = std::abs((pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M() - (double) f_WMass);
+ 
+        double mass_diff = std::abs(std::sqrt((pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M()) - std::sqrt((double) f_WMass));
         if (mass_diff > 2.0) {
             std::cout << RED << "Mass Difference = " << mass_diff << std::endl << RESET;
         } else {
             std::cout << GREEN << "Mass Difference = " << mass_diff << std::endl << RESET;
         }
+        */
         
         L1TrackTripletWordContainer->push_back(L1Triplet);
         
