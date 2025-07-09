@@ -348,8 +348,8 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                 
                 // Compute px, py for triplet tracks
                 if (tmp_trk.globalPhi >= phiQuadrants_[0] && tmp_trk.globalPhi < phiQuadrants_[1]) {
-                    const l1ttripletemu::cosh_lut_index_t cosIndex = (tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
-                    const l1ttripletemu::cosh_lut_index_t sinIndex = (phiQuadrants_[1] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t cosIndex = (tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t sinIndex = (phiQuadrants_[1] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
                         px1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
                         py1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
@@ -361,8 +361,8 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                         py3 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     }
                 } else if (tmp_trk.globalPhi >= phiQuadrants_[1] && tmp_trk.globalPhi < phiQuadrants_[2]) {
-                    const l1ttripletemu::cosh_lut_index_t cosIndex = (phiQuadrants_[2] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
-                    const l1ttripletemu::cosh_lut_index_t sinIndex = (tmp_trk.globalPhi - phiQuadrants_[1]) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t cosIndex = (phiQuadrants_[2] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t sinIndex = (tmp_trk.globalPhi - phiQuadrants_[1]) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
                         px1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
                         py1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
@@ -374,8 +374,8 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                         py3 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex];
                     }
                 } else if (tmp_trk.globalPhi >= phiQuadrants_[2] && tmp_trk.globalPhi < phiQuadrants_[3]) {
-                    const l1ttripletemu::cosh_lut_index_t cosIndex = (tmp_trk.globalPhi - phiQuadrants_[2]) >> l1ttripletemu::kCosLUTShift;
-                    const l1ttripletemu::cosh_lut_index_t sinIndex = (phiQuadrants_[3] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t cosIndex = (tmp_trk.globalPhi - phiQuadrants_[2]) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t sinIndex = (phiQuadrants_[3] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
                         px1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex]);
                         py1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
@@ -387,8 +387,8 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                         py3 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     }
                 } else if (tmp_trk.globalPhi >= phiQuadrants_[3] && tmp_trk.globalPhi < phiQuadrants_[4]) {
-                    const l1ttripletemu::cosh_lut_index_t cosIndex = (phiQuadrants_[4] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
-                    const l1ttripletemu::cosh_lut_index_t sinIndex = (tmp_trk.globalPhi - phiQuadrants_[3]) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t cosIndex = (phiQuadrants_[4] - 1 - tmp_trk.globalPhi) >> l1ttripletemu::kCosLUTShift;
+                    const l1ttripletemu::cos_lut_index_t sinIndex = (tmp_trk.globalPhi - phiQuadrants_[3]) >> l1ttripletemu::kCosLUTShift;
                     if (tk == 0) {
                         px1 = (l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[cosIndex];
                         py1 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);

@@ -75,16 +75,17 @@ namespace l1ttripletemu {
         WMass_t mW;
     };
 
-    // FUNCTION DEFINITIONS
+    // ---- FUNCTION DEFINITIONS ----
     // Generate LUTs for W invariant mass calculation
     std::vector<cos_lut_fixed_t> generateCosLUT();
     std::vector<cosh_lut_fixed_t> generateCoshLUT();
     std::vector<sinh_lut_fixed_t> generateSinhLUT();
 
+    // Local to global phi conversion util
     global_phi_t localToGlobalPhi(TTTrack_TrackWord::phi_t local_phi, global_phi_t sector_shift);
-    
     std::vector<global_phi_t> generatePhiSliceLUT(unsigned int N);
 
+    // Print LUT for debugging
     template <typename T>
     void printLUT(std::vector<T> lut, std::string module = "", std::string name = "") {
         edm::LogVerbatim log(module);

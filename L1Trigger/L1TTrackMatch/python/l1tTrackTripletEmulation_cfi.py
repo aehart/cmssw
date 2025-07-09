@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 l1tTrackTripletEmulation = cms.EDProducer('L1TrackTripletEmulatorProducer',
         L1TrackInputTag= cms.InputTag("l1tTrackVertexAssociationProducerForJets", "Level1TTTracksSelectedAssociatedEmulation"),
-        L1PVertexInputTag=cms.InputTag("l1tVertexFinderEmulator","L1VerticesEmulation"),
+        #L1TrackInputTag = cms.InputTag("l1tGTTInputProducer", "Level1TTTracksConverted"),
+        L1PVertexInputTag = cms.InputTag("l1tVertexFinderEmulator","L1VerticesEmulation"),
         #trk1_ptMin = cms.double(22.0),
         #trk1_absEtaMax = cms.double(2.4),
         #trk1_mvaMin = cms.double(0.92),

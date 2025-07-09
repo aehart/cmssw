@@ -585,6 +585,11 @@ private:
   std::vector<int>* m_trkjetem_ntracks;
   std::vector<int>* m_trkjetem_nxtracks;
 
+  std::vector<int>* m_gen_W_daughter_pdgid;
+  std::vector<int>* m_gen_nPi_from_W;
+  std::vector<float>* m_gen_pi1pt;
+  std::vector<float>* m_gen_pi2pt;
+  std::vector<float>* m_gen_pi3pt;
   std::vector<float>* m_triplet_phi;
   std::vector<float>* m_triplet_eta;
   std::vector<float>* m_triplet_pt;
@@ -622,6 +627,28 @@ private:
   std::vector<int>* m_triplet_trk3pdgid_mother;
   std::vector<float>* m_triplet_trk3_tpcharge;
   std::vector<int>* m_triplet_same_tp_match;
+
+	// W3Pi emulation cutflow branches
+	std::vector<int>* m_W_daughter_pdgId;
+	std::vector<int>* m_nPi_from_W;
+	std::vector<float>* m_pi1_pt;
+	std::vector<float>* m_pi2_pt;
+	std::vector<float>* m_pi3_pt;
+  std::vector<float>* m_pi12_dr;
+  std::vector<float>* m_pi13_dr;
+  std::vector<float>* m_pi23_dr;
+	std::vector<float>* m_triplet_trk1mva_cutflow;
+	std::vector<float>* m_triplet_trk2mva_cutflow;
+	std::vector<float>* m_triplet_trk3mva_cutflow;
+	std::vector<float>* m_triplet_trk1pt_cutflow;
+	std::vector<float>* m_triplet_trk2pt_cutflow;
+	std::vector<float>* m_triplet_trk3pt_cutflow;
+	std::vector<float>* m_triplet_charge_cutflow;
+	std::vector<float>* m_triplet_mass_cutflow;
+	std::vector<float>* m_triplet_pt_cutflow;
+	std::vector<float>* m_triplet_dz_cutflow;
+
+
 
   std::vector<float>* m_trkjetExt_vz;
   std::vector<float>* m_trkjetExt_p;
@@ -1072,6 +1099,11 @@ void L1TrackObjectNtupleMaker::endJob() {
   delete m_trkjetem_ntracks;
   delete m_trkjetem_nxtracks;
 
+  delete m_gen_W_daughter_pdgid;
+  delete m_gen_nPi_from_W;
+  delete m_gen_pi1pt;
+  delete m_gen_pi2pt;
+  delete m_gen_pi3pt;
   delete m_triplet_eta;
   delete m_triplet_phi;
   delete m_triplet_pt;
@@ -1109,6 +1141,25 @@ void L1TrackObjectNtupleMaker::endJob() {
   delete m_triplet_trk3pdgid_mother;
   delete m_triplet_trk3_tpcharge;
   delete m_triplet_same_tp_match;
+	delete m_W_daughter_pdgId;
+	delete m_nPi_from_W;
+	delete m_pi1_pt;
+	delete m_pi2_pt;
+	delete m_pi3_pt;
+  delete m_pi12_dr;
+  delete m_pi13_dr;
+  delete m_pi23_dr;
+	delete m_triplet_trk1mva_cutflow;
+	delete m_triplet_trk2mva_cutflow;
+	delete m_triplet_trk3mva_cutflow;
+	delete m_triplet_trk1pt_cutflow;
+	delete m_triplet_trk2pt_cutflow;
+	delete m_triplet_trk3pt_cutflow;
+	delete m_triplet_charge_cutflow;
+	delete m_triplet_mass_cutflow;
+	delete m_triplet_pt_cutflow;
+	delete m_triplet_dz_cutflow;
+
 
   delete m_trkfastjet_eta;
   delete m_trkfastjet_vz;
@@ -1453,6 +1504,11 @@ void L1TrackObjectNtupleMaker::beginJob() {
   m_trkjet_nTightDisplaced = new std::vector<int>;
   m_trkjet_ntdtrk = new std::vector<int>;
 
+  m_gen_W_daughter_pdgid = new std::vector<int>;
+  m_gen_nPi_from_W = new std::vector<int>;
+  m_gen_pi1pt = new std::vector<float>;
+  m_gen_pi2pt = new std::vector<float>;
+  m_gen_pi3pt = new std::vector<float>;
   m_triplet_eta = new std::vector<float>;
   m_triplet_phi = new std::vector<float>;
   m_triplet_pt = new std::vector<float>;
@@ -1490,6 +1546,24 @@ void L1TrackObjectNtupleMaker::beginJob() {
   m_triplet_trk3pdgid_mother = new std::vector<int>;
   m_triplet_trk3_tpcharge = new std::vector<float>;
   m_triplet_same_tp_match = new std::vector<int>;
+	m_W_daughter_pdgId = new std::vector<int>;
+	m_nPi_from_W = new std::vector<int>;
+	m_pi1_pt = new std::vector<float>;
+	m_pi2_pt = new std::vector<float>;
+	m_pi3_pt = new std::vector<float>;
+  m_pi12_dr = new std::vector<float>;
+  m_pi13_dr = new std::vector<float>;
+  m_pi23_dr = new std::vector<float>;
+	m_triplet_trk1mva_cutflow = new std::vector<float>;
+	m_triplet_trk2mva_cutflow = new std::vector<float>;
+	m_triplet_trk3mva_cutflow = new std::vector<float>;
+	m_triplet_trk1pt_cutflow = new std::vector<float>;
+	m_triplet_trk2pt_cutflow = new std::vector<float>;
+	m_triplet_trk3pt_cutflow = new std::vector<float>;
+	m_triplet_charge_cutflow = new std::vector<float>;
+	m_triplet_mass_cutflow = new std::vector<float>;
+	m_triplet_pt_cutflow = new std::vector<float>;
+	m_triplet_dz_cutflow = new std::vector<float>;
 
   m_trkjetem_pt = new std::vector<float>;
   m_trkjetem_phi = new std::vector<float>;
@@ -1797,6 +1871,12 @@ void L1TrackObjectNtupleMaker::beginJob() {
       eventTree->Branch("trkjetem_ntracks", &m_trkjetem_ntracks);
       eventTree->Branch("trkjetem_nxtracks", &m_trkjetem_nxtracks);
     }
+    eventTree->Branch("gen_W_daughter_pdgid", &m_gen_W_daughter_pdgid);
+    eventTree->Branch("gen_nPi_from_W", &m_gen_nPi_from_W);
+    eventTree->Branch("gen_pi1pt", &m_gen_pi1pt);
+    eventTree->Branch("gen_pi2pt", &m_gen_pi2pt);
+    eventTree->Branch("gen_pi3pt", &m_gen_pi3pt);
+
     eventTree->Branch("triplet_eta", &m_triplet_eta);
     eventTree->Branch("triplet_pt", &m_triplet_pt);
     eventTree->Branch("triplet_phi", &m_triplet_phi);
@@ -1834,6 +1914,24 @@ void L1TrackObjectNtupleMaker::beginJob() {
     eventTree->Branch("triplet_trk3pdgid_mother", &m_triplet_trk3pdgid_mother);
     eventTree->Branch("triplet_trk3_tpcharge", &m_triplet_trk3_tpcharge);
     eventTree->Branch("triplet_same_tp_match", &m_triplet_same_tp_match);
+		eventTree->Branch("W_daughter_pdgId", &m_W_daughter_pdgId);
+		eventTree->Branch("nPi_from_W", &m_nPi_from_W);
+		eventTree->Branch("pi1_pt", &m_pi1_pt);
+		eventTree->Branch("pi2_pt", &m_pi2_pt);
+		eventTree->Branch("pi3_pt", &m_pi3_pt);
+    eventTree->Branch("pi12_dr", &m_pi12_dr);
+    eventTree->Branch("pi13_dr", &m_pi13_dr);
+    eventTree->Branch("pi23_dr", &m_pi23_dr);
+		eventTree->Branch("triplet_trk1mva_cutflow", &m_triplet_trk1mva_cutflow);
+		eventTree->Branch("triplet_trk2mva_cutflow", &m_triplet_trk2mva_cutflow);
+		eventTree->Branch("triplet_trk3mva_cutflow", &m_triplet_trk3mva_cutflow);
+		eventTree->Branch("triplet_trk1pt_cutflow", &m_triplet_trk1pt_cutflow);
+		eventTree->Branch("triplet_trk2pt_cutflow", &m_triplet_trk2pt_cutflow);
+		eventTree->Branch("triplet_trk3pt_cutflow", &m_triplet_trk3pt_cutflow);
+		eventTree->Branch("triplet_charge_cutflow", &m_triplet_charge_cutflow);
+		eventTree->Branch("triplet_mass_cutflow", &m_triplet_mass_cutflow);
+		eventTree->Branch("triplet_pt_cutflow", &m_triplet_pt_cutflow);
+		eventTree->Branch("triplet_dz_cutflow", &m_triplet_dz_cutflow);
 
     if (Displaced == "Displaced" || Displaced == "Both") {
       eventTree->Branch("trkfastjetExt_eta", &m_trkfastjetExt_eta);
@@ -2153,6 +2251,11 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       m_trkjetem_ntracks->clear();
       m_trkjetem_nxtracks->clear();
     }
+    m_gen_W_daughter_pdgid->clear();
+    m_gen_nPi_from_W->clear();
+    m_gen_pi1pt->clear();
+    m_gen_pi2pt->clear();
+    m_gen_pi3pt->clear();
     m_triplet_eta->clear();
     m_triplet_pt->clear();
     m_triplet_phi->clear();
@@ -2190,6 +2293,24 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     m_triplet_trk3pdgid_mother->clear();
     m_triplet_trk3_tpcharge->clear();
     m_triplet_same_tp_match->clear();
+		m_W_daughter_pdgId->clear();
+		m_nPi_from_W->clear();
+		m_pi1_pt->clear();
+		m_pi2_pt->clear();
+		m_pi3_pt->clear();
+    m_pi12_dr->clear();
+    m_pi13_dr->clear();
+    m_pi23_dr->clear();
+		m_triplet_trk1mva_cutflow->clear();
+		m_triplet_trk2mva_cutflow->clear();
+		m_triplet_trk3mva_cutflow->clear();
+		m_triplet_trk1pt_cutflow->clear();
+		m_triplet_trk2pt_cutflow->clear();
+		m_triplet_trk3pt_cutflow->clear();
+		m_triplet_charge_cutflow->clear();
+		m_triplet_mass_cutflow->clear();
+		m_triplet_pt_cutflow->clear();
+		m_triplet_dz_cutflow->clear();
 
     if (Displaced == "Displaced" || Displaced == "Both") {
       m_trkjetExt_eta->clear();
@@ -3722,6 +3843,43 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       }
     }
 
+    // W3Pi gen plots
+    int nPi_W_daughter = 0;
+    std::vector<float> piPts;
+    for (auto genpartIter = GenParticleHandle->begin(); genpartIter != GenParticleHandle->end(); ++genpartIter) {
+      int status = genpartIter->status();
+      if (status != 1) { continue; }
+
+      // Compute pdgIds of W daughters
+      if (genpartIter->numberOfMothers() > 0) {
+        if (std::abs(genpartIter->mother(0)->pdgId()) == 24) { 
+          m_gen_W_daughter_pdgid->push_back(genpartIter->pdgId()); 
+        }
+      }
+
+      // Compute number of pions from W in signal
+      if (std::abs(genpartIter->pdgId()) == 211) {
+          if (genpartIter->numberOfMothers() > 0) {
+            if (std::abs(genpartIter->mother(0)->pdgId()) == 24) { 
+              nPi_W_daughter++; 
+              piPts.push_back(genpartIter->pt());
+            }
+          }
+      }
+    }
+
+    // Sort pion pts in descending order
+    if (!piPts.size() == 0) {
+      std::sort(piPts.begin(), piPts.end(), std::greater<float>());
+    }
+
+    if (piPts.size() >= 3) {
+      m_gen_pi1pt->push_back(piPts[0]);
+      m_gen_pi2pt->push_back(piPts[1]);
+      m_gen_pi3pt->push_back(piPts[2]);
+    }
+
+    // Reco triplet branches
     if (TrackTripletsHandle.isValid()) {
       if (!TrackTripletsHandle->empty()) {
         for (tripletIter = TrackTripletsHandle->begin(); tripletIter != TrackTripletsHandle->end(); ++tripletIter) {
@@ -3773,7 +3931,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
             float tmp_tktriplet_eta = iterTripletL1Track->momentum().eta();
             float tmp_tktriplet_phi = iterTripletL1Track->momentum().phi();
             
-            float diff = 0.001;  // Defines how tight the pt, eta, phi matches are
+            float diff = 0.001;  // Defines how tight the pt, eta, phi matches are (original: 0.001)
 
             // Look through triplet tracks for matching
             for (int i = 0; i < 3; i++) {
@@ -3844,6 +4002,146 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
             m_triplet_trk3pdgid_mother->push_back(-999);
             m_triplet_trk3_tpcharge->push_back(-999);
           }
+
+          // ----------------------------------------------------------------------------------------------
+          // Cutflow plots for W->3Pi efficiency studies
+          // ----------------------------------------------------------------------------------------------
+
+          // Skip event if there isn't a matched triplet, or matched TP is null
+          if (!tk1_match || !tk2_match || !tk3_match) { continue; }
+          if (usedTPs[0].isNull() || usedTPs[1].isNull() || usedTPs[2].isNull()) { continue; }
+
+          // Sort TP pTs in descending order
+          std::sort(usedTPs.begin(), usedTPs.end(),
+          [](auto const &a, auto const &b){
+            if ( a.isNull() &&  b.isNull()) return false;  // equal
+            if ( a.isNull())          return false;  // push nulls to back
+            if ( b.isNull())          return true;
+            return a->p4().pt() > b->p4().pt();
+          }
+          );
+
+          // Ensure triplet information isn't null before ascessing
+					int tp1_pdgId = -999;
+					int tp1_pdgId_mother = -999;
+					int tp2_pdgId = -999;
+					int tp2_pdgId_mother = -999;
+					int tp3_pdgId = -999;
+					int tp3_pdgId_mother = -999;
+
+          if (!usedTPs[0].isNull()) {
+            tp1_pdgId = usedTPs[0]->pdgId();
+						if (usedTPs[0]->genParticles().size() > 0) {
+							tp1_pdgId_mother = usedTPs[0]->genParticles().at(0)->mother(0)->pdgId();
+						}
+          } 
+
+					if (!usedTPs[1].isNull()) {
+            tp2_pdgId = usedTPs[1]->pdgId();
+						if (usedTPs[1]->genParticles().size() > 0) {
+							tp2_pdgId_mother = usedTPs[1]->genParticles().at(0)->mother(0)->pdgId();
+						}
+          } 
+
+					if (!usedTPs[2].isNull()) {
+            tp3_pdgId = usedTPs[2]->pdgId();
+						if (usedTPs[2]->genParticles().size() > 0) {
+							tp3_pdgId_mother = usedTPs[2]->genParticles().at(0)->mother(0)->pdgId();
+						}
+          } 
+
+					// Validation signal MC plots
+					int nPiFromW = 0;
+					if (std::abs(tp1_pdgId_mother) == 24) { 
+						m_W_daughter_pdgId->push_back(tp1_pdgId); 
+						if (std::abs(tp1_pdgId) == 211) {
+							nPiFromW += 1;
+						}
+					}
+					if (std::abs(tp2_pdgId_mother) == 24) {
+						 m_W_daughter_pdgId->push_back(tp2_pdgId); 
+						 if (std::abs(tp2_pdgId) == 211) {
+							nPiFromW += 1;
+						}
+					}
+					if (std::abs(tp3_pdgId_mother) == 24) { 
+						m_W_daughter_pdgId->push_back(tp3_pdgId);
+						if (std::abs(tp3_pdgId) == 211) {
+							nPiFromW += 1;
+						}
+					}
+					m_nPi_from_W->push_back(nPiFromW);
+					
+					// Define cutflow
+					bool trk_triplet_W3Pi = std::abs(tp1_pdgId) == 211 && std::abs(tp2_pdgId) == 211 && std::abs(tp3_pdgId) == 211 and std::abs(tp1_pdgId_mother) == 24 && std::abs(tp2_pdgId_mother) == 24 && std::abs(tp3_pdgId_mother) == 24;
+          bool mva_cut = tripletIter->trkPtr(0)->trkMVA1() > 0.92 && tripletIter->trkPtr(1)->trkMVA1() > 0.92 && tripletIter->trkPtr(2)->trkMVA1() > 0.92;
+          bool pt1_cut = tripletIter->trkPtr(0)->momentum().perp() > 22;
+          bool pt2_cut = tripletIter->trkPtr(1)->momentum().perp() > 17;
+          bool pt3_cut = tripletIter->trkPtr(2)->momentum().perp() > 10;
+          bool triplet_charge_cut = std::abs(tripletIter->getTripletCharge()) == 1;
+          bool triplet_mass_cut = std::abs(tripletIter->mass() - 80) < 20;
+          bool triplet_pt_cut = tripletIter->pt() < 30;
+          double dz01 = std::abs(tripletIter->trkPtr(0)->z0() - tripletIter->trkPtr(1)->z0());
+          double dz02 = std::abs(tripletIter->trkPtr(0)->z0() - tripletIter->trkPtr(2)->z0());
+          double dz12 = std::abs(tripletIter->trkPtr(2)->z0() - tripletIter->trkPtr(1)->z0());
+          double max_dz = std::max( std::max(dz01, dz02), dz12 );
+          bool triplet_dz_cut = (max_dz < 1.0);
+
+					// Final MC pion pt validation branch
+					if (trk_triplet_W3Pi) {
+						m_pi1_pt->push_back(usedTPs[0]->p4().pt());
+						m_pi2_pt->push_back(usedTPs[1]->p4().pt());
+						m_pi3_pt->push_back(usedTPs[2]->p4().pt());
+					}
+          
+          // DR between pions
+          const double pi = 4.0 * atan(1.0);
+          double dphi12 = std::fabs(usedTPs[0]->p4().phi() - usedTPs[1]->p4().phi());
+          double dphi13 = std::fabs(usedTPs[1]->p4().phi() - usedTPs[2]->p4().phi());
+          double dphi23 = std::fabs(usedTPs[1]->p4().phi() - usedTPs[2]->p4().phi());
+          if (dphi12 > pi) { dphi12 = 2*pi - dphi12; }
+          if (dphi13 > pi) { dphi13 = 2*pi - dphi13; }
+          if (dphi23 > pi) { dphi23 = 2*pi - dphi23; }
+
+          double deta12 = usedTPs[0]->p4().eta() - usedTPs[1]->p4().eta();
+          double deta13 = usedTPs[0]->p4().eta() - usedTPs[2]->p4().eta();
+          double deta23 = usedTPs[1]->p4().eta() - usedTPs[2]->p4().eta();
+
+          double dR12 = std::sqrt(dphi12*dphi12 + deta12*deta12);
+          double dR13 = std::sqrt(dphi13*dphi13 + deta13*deta13);
+          double dR23 = std::sqrt(dphi23*dphi23 + deta23*deta23);
+
+          m_pi12_dr->push_back(dR12);
+          m_pi13_dr->push_back(dR13);
+          m_pi23_dr->push_back(dR23);
+          
+					// Fill cutflow branches
+					if (trk_triplet_W3Pi) {
+						m_triplet_trk1mva_cutflow->push_back(tripletIter->trkPtr(0)->trkMVA1());
+						m_triplet_trk2mva_cutflow->push_back(tripletIter->trkPtr(1)->trkMVA1());
+						m_triplet_trk3mva_cutflow->push_back(tripletIter->trkPtr(2)->trkMVA1());
+						if (mva_cut) {
+							m_triplet_trk1pt_cutflow->push_back(tripletIter->trkPtr(0)->momentum().perp());
+							if (pt1_cut) {
+								m_triplet_trk2pt_cutflow->push_back(tripletIter->trkPtr(1)->momentum().perp());
+								if (pt2_cut) {
+									m_triplet_trk3pt_cutflow->push_back(tripletIter->trkPtr(2)->momentum().perp());
+									if (pt3_cut) {
+										m_triplet_charge_cutflow->push_back(tripletIter->getTripletCharge());
+										if (triplet_charge_cut) {
+											m_triplet_mass_cutflow->push_back(std::fabs(tripletIter->mass()-80));
+											if (triplet_mass_cut) {
+												m_triplet_pt_cutflow->push_back(tripletIter->pt());
+												if (triplet_pt_cut) {
+													m_triplet_dz_cutflow->push_back(max_dz);
+												}  // end triplet pt cut
+											}  // end triplet mass cut
+										}  // end triplet charge cut
+									}  // end trk 3 pt cut
+								}  // end trk 2 pt cut
+							}  // end trk 1 pt cut
+						}  // end trk MVA cut
+					}  // end trk match cut
 
         }  // end loop over triplet handle
       } else {
