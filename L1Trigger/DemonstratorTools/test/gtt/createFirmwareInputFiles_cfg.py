@@ -142,6 +142,40 @@ process.l1tTrackVertexAssociationProducerForJets.cutSet = cms.PSet(
     deltaZMaxEtaBounds = cms.vdouble(0.0, 0.7, 1.0, 1.2, 1.6, 2.0, 2.4), # these values define the bin boundaries in |eta|
     deltaZMax = cms.vdouble(0.37, 0.50, 0.60, 0.75, 1.00, 1.60), # delta z must be less than these values, there will be one less value here than in deltaZMaxEtaBounds, [cm]
 )
+
+# Disable all cuts for comparison between trk triplet EM and FW 
+process.l1tTrackTripletEmulation.trk1_ptMin = -1.0
+process.l1tTrackTripletEmulation.trk1_absEtaMax = 10e7
+process.l1tTrackTripletEmulation.trk1_mvaMin = -1.0
+process.l1tTrackTripletEmulation.trk1_nstubMin = -1
+process.l1tTrackTripletEmulation.trk1_dzMax = 10e7
+process.l1tTrackTripletEmulation.trk2_ptMin = -1.0
+process.l1tTrackTripletEmulation.trk2_absEtaMax = 10e7
+process.l1tTrackTripletEmulation.trk2_mvaMin = -1.0
+process.l1tTrackTripletEmulation.trk2_nstubMin = -1
+process.l1tTrackTripletEmulation.trk2_dzMax = 10e7
+process.l1tTrackTripletEmulation.trk3_ptMin = -1.0
+process.l1tTrackTripletEmulation.trk3_absEtaMax = 10e7
+process.l1tTrackTripletEmulation.trk3_mvaMin = -1.0
+process.l1tTrackTripletEmulation.trk3_nstubMin = 0
+process.l1tTrackTripletEmulation.trk3_dzMax = 10e7
+process.l1tTrackTripletEmulation.triplet_massMin = -1.0
+process.l1tTrackTripletEmulation.triplet_massMax = 10e7
+process.l1tTrackTripletEmulation.triplet_absEtaMin = -1.0
+process.l1tTrackTripletEmulation.triplet_absEtaMax = 10e7
+process.l1tTrackTripletEmulation.triplet_ptMin = -1.0
+process.l1tTrackTripletEmulation.triplet_ptMax = 10e7
+process.l1tTrackTripletEmulation.triplet_absCharge = -1
+process.l1tTrackTripletEmulation.triplet_massOverflow = 1000
+process.l1tTrackTripletEmulation.pair1_massMin = -1
+process.l1tTrackTripletEmulation.pair1_massMax = 10e7
+process.l1tTrackTripletEmulation.pair2_massMin = -1
+process.l1tTrackTripletEmulation.pair2_massMax = 10e7
+process.l1tTrackTripletEmulation.pair1_dzMin = -1
+process.l1tTrackTripletEmulation.pair1_dzMax = 10e7
+process.l1tTrackTripletEmulation.pair2_dzMin = -1
+process.l1tTrackTripletEmulation.pair2_dzMax = 10e7
+
 process.l1tTrackerEmuHTMiss.debug = (options.debug > 0)
 
 #Disable internal track selection

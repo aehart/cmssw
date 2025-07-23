@@ -305,7 +305,16 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         this_l1track++;
         
         // Triplet invariant mass calculation
-        if (this_l1track == nTracks-1) {
+        if (this_l1track == nTracks) {
+            // DEBUG: PRINT TRACK TRIPLET FIELDS
+            /*
+            std::cout << "-----------------------------------" << std::endl;
+            std::cout << "Trk1: pT = " << trk1.f_Pt << ", Eta = " << trk1.f_Eta << ", Phi = " << trk1.globalPhi << std::endl;
+            std::cout << "Trk2: pT = " << trk2.f_Pt << ", Eta = " << trk2.f_Eta << ", Phi = " << trk2.globalPhi << std::endl;
+            std::cout << "Trk3: pT = " << trk3.f_Pt << ", Eta = " << trk3.f_Eta << ", Phi = " << trk3.globalPhi << std::endl;
+            std::cout << "-----------------------------------" << std::endl;
+            */
+
             // Check that all triplet tracks are valid
             if (trk1.f_Pt == 0 || trk2.f_Pt == 0 || trk3.f_Pt == 0) { break; }
         
@@ -323,6 +332,13 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             l1ttripletemu::pxyz_t p1 = (l1ttripletemu::pxyz_t) trk1.f_Pt * coshLUT_[coshIndex1];
             l1ttripletemu::pxyz_t p2 = (l1ttripletemu::pxyz_t) trk2.f_Pt * coshLUT_[coshIndex2];
             l1ttripletemu::pxyz_t p3 = (l1ttripletemu::pxyz_t) trk3.f_Pt * coshLUT_[coshIndex3];
+
+            /*
+            std::cout << "p1: Float = " << trk1.Pt * cosh(trk1.Eta) << ", FW = " << p1 << std::endl;
+            std::cout << "p2: Float = " << trk2.Pt * cosh(trk2.Eta) << ", FW = " << p2 << std::endl;
+            std::cout << "p3: Float = " << trk3.Pt * cosh(trk3.Eta) << ", FW = " << p3 << std::endl;
+            std::cout << "-----------------------------------" << std::endl;
+            */
 
             // Z-component track momenta
             l1ttripletemu::pxyz_t pz1 = (l1ttripletemu::pxyz_t) trk1.f_Pt * sinhLUT_[coshIndex1];
@@ -402,6 +418,13 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                 }    
             }
 
+            /*
+            std::cout << "px (FW) = (" << px1 << ", " << px2 << ", " << px3 << ")" << std::endl;
+            std::cout << "py (FW) = (" << py1 << ", " << py2 << ", " << py3 << ")" << std::endl;
+            std::cout << "pz (FW) = (" << pz1 << ", " << pz2 << ", " << pz3 << ")" << std::endl;
+            std::cout << "-----------------------------------" << std::endl;
+            */
+
             // W mass calculation
             f_WMass = (l1ttripletemu::WMass_t) (
                 (p1 + p2 + p3)*(p1 + p2 + p3)
@@ -425,7 +448,7 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
     math::PtEtaPhiMLorentzVectorD pion1(trk1.Pt, trk1.Eta, trk1.Phi, trk1_mass_);
     math::PtEtaPhiMLorentzVectorD pion2(trk2.Pt, trk2.Eta, trk2.Phi, trk2_mass_);
     math::PtEtaPhiMLorentzVectorD pion3(trk3.Pt, trk3.Eta, trk3.Phi, trk3_mass_);
-    
+
     double triplet_eta = (pion1 + pion2 + pion3).Eta();
     bool event_pass = true;
     
@@ -469,6 +492,7 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
     float tripletPx = (pion1 + pion2 + pion3).Pt() * cos((pion1 + pion2 + pion3).Phi());
     float tripletPy = (pion1 + pion2 + pion3).Pt() * sin((pion1 + pion2 + pion3).Phi());
     float tripletPz = (pion1 + pion2 + pion3).Pt() * sinh((pion1 + pion2 + pion3).Eta());
+
     float tripletE =
     sqrt(tripletPx * tripletPx + tripletPy * tripletPy + tripletPz * tripletPz + triplet_mass * triplet_mass);
     TkTriplet trkTriplet(math::XYZTLorentzVector(tripletPx, tripletPy, tripletPz, tripletE),
@@ -490,15 +514,24 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         tkTriplet.mW = f_WMass; 
         l1t::TkTripletWord::unassigned_t unassigned = 0;
         
-        l1t::TkTripletWord L1Triplet(val, tkTriplet.mW.range(), unassigned);
+        l1t::TkTripletWord L1Triplet(val, tkTriplet.mW, unassigned);
 
-        /*
-        constexpr char const* RED    = "\033[31m";
-        constexpr char const* GREEN  = "\033[32m";
-        constexpr char const* RESET  = "\033[0m";
+        // CODE FOR DEBUGGING EMU MASS OUTPUT
+        constexpr char const* RED   = "\033[31m";
+        constexpr char const* GREEN = "\033[32m";
+        constexpr char const* RESET = "\033[0m";
 
-        std::cout << "W Mass (float)    " << (pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M() << std::endl;
-        std::cout << "W Mass (firmware) " << f_WMass.to_string(10).c_str() << std::endl;
+        float floatWMassSq = (pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M();
+
+        std::cout << "===================================================" << std::endl;
+        std::cout << "Float Mass^2 Word: " << ((l1ttripletemu::WMass_t)floatWMassSq).to_string(2).c_str() << std::endl;
+        std::cout << "FW Mass^2 Word   : " << f_WMass.to_string(2).c_str() << std::endl;
+        std::cout << "W Mass^2 (float)    = " << floatWMassSq << std::endl;
+        std::cout << "W Mass^2 (firmware) = " << f_WMass.to_string(10).c_str() << std::endl;
+        std::cout << "===================================================" << std::endl;
+        std::cout << "Word testing (dec): " << L1Triplet.massWord().to_string(10).c_str() << std::endl;
+        std::cout << "Word testing (bin): " << L1Triplet.massWord().to_string(2).c_str() << std::endl;
+        std::cout << "Word testing (hex): " << L1Triplet.massWord().to_string(16).c_str() << std::endl;
  
         double mass_diff = std::abs(std::sqrt((pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M()) - std::sqrt((double) f_WMass));
         if (mass_diff > 2.0) {
@@ -506,7 +539,6 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         } else {
             std::cout << GREEN << "Mass Difference = " << mass_diff << std::endl << RESET;
         }
-        */
         
         L1TrackTripletWordContainer->push_back(L1Triplet);
         
@@ -566,7 +598,7 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                 }
                 
                 void L1TrackTripletEmulatorProducer::fillDescriptions(ConfigurationDescriptions &descriptions) {
-                    //The following says we do not know what parameters are allowed so do no validation
+                    //The following says we do not know what parameters are allowed 
                     // Please change this to state exactly what you do use, even if it is no parameters
                     ParameterSetDescription desc;
                     desc.add<edm::InputTag>("L1TrackInputTag", edm::InputTag("l1tTTTracksFromTrackletEmulation", "Level1TTTracks"));
