@@ -48,17 +48,17 @@ namespace l1t::demo::codecs {
   }
 
   // Encodes a set of tracks onto a set of links
-  size_t encodeLinks(std::array<std::vector<ap_uint<96>>, 18>& trackWords,
-                     std::array<std::vector<ap_uint<64>>, 18>& linkData) {
+  size_t encodeLinks(std::array<std::vector<ap_uint<96>>, 18>& trackWords, // 96 ->128, 18->1
+                     std::array<std::vector<ap_uint<64>>, 18>& linkData) { // 18->1
     size_t counter = 0;
     for (size_t i = 0; i < linkData.size(); i++) {
       // Pad track vectors -> full packet length (156 frames = 104 tracks)
-      trackWords.at(i).resize(104, 0);
-      linkData.at(i).resize(156, {0});
+      trackWords.at(i).resize(104, 0);  // 104 -> 1
+      linkData.at(i).resize(156, {0});  // 156 -> 2
 
       for (size_t j = 0; (j < trackWords.at(i).size()); j += 2) {
-        linkData.at(i).at(3 * j / 2) = trackWords.at(i).at(j)(63, 0);
-        linkData.at(i).at(3 * j / 2 + 1) =
+        linkData.at(i).at(3 * j / 2) = trackWords.at(i).at(j)(63, 0);  // first 64 bits of track word (index 2j)
+        linkData.at(i).at(3 * j / 2 + 1) = // same as previous, index 2j+1, (127,64)
             (ap_uint<32>(trackWords.at(i).at(j + 1)(31, 0)), ap_uint<32>(trackWords.at(i).at(j)(95, 64)));
         linkData.at(i).at(3 * j / 2 + 2) = trackWords.at(i).at(j + 1)(95, 32);
         counter += trackWords.at(i).at(j)(95, 95) + trackWords.at(i).at(j + 1)(95, 95);

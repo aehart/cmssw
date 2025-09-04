@@ -648,8 +648,36 @@ private:
 	std::vector<float>* m_triplet_pt_cutflow;
 	std::vector<float>* m_triplet_dz_cutflow;
 
+  // W3Pi tracking particle quantities
+  std::vector<float>* m_triplet_tp_pi1pt;
+  std::vector<float>* m_triplet_tp_pi2pt;
+  std::vector<float>* m_triplet_tp_pi3pt;
+  std::vector<float>* m_triplet_tp_pi1eta;
+  std::vector<float>* m_triplet_tp_pi2eta;
+  std::vector<float>* m_triplet_tp_pi3eta;
+  std::vector<int>* m_triplet_tp_pis_highest_pt;
+  std::vector<int>* m_triplet_tp_pis_highest_pt_matchL1;
+  std::vector<float>* m_triplet_tp_min_pt;
+  std::vector<float>* m_triplet_tp_max_eta;
+  std::vector<float>* m_triplet_tp_all_pt;
+  std::vector<float>* m_triplet_tp_matched_pt;
+  std::vector<float>* m_triplet_tp_all_eta;
+  std::vector<float>* m_triplet_tp_matched_eta;
+  std::vector<float>* m_tp_all_pt;
+  std::vector<float>* m_tp_matched_pt;
+  std::vector<float>* m_tp_all_eta;
+  std::vector<float>* m_tp_matched_eta;
 
 
+  // W3Pi gen-level quantities
+  std::vector<float>* m_triplet_gen_pi1pt;
+  std::vector<float>* m_triplet_gen_pi2pt;
+  std::vector<float>* m_triplet_gen_pi3pt;
+  std::vector<float>* m_triplet_gen_pi1eta;
+  std::vector<float>* m_triplet_gen_pi2eta;
+  std::vector<float>* m_triplet_gen_pi3eta;
+  std::vector<int>* m_triplet_gen_pis_highest_pt;
+  
   std::vector<float>* m_trkjetExt_vz;
   std::vector<float>* m_trkjetExt_p;
   std::vector<float>* m_trkjetExt_phi;
@@ -1159,7 +1187,31 @@ void L1TrackObjectNtupleMaker::endJob() {
 	delete m_triplet_mass_cutflow;
 	delete m_triplet_pt_cutflow;
 	delete m_triplet_dz_cutflow;
-
+  delete m_triplet_tp_pi1pt;
+  delete m_triplet_tp_pi2pt;
+  delete m_triplet_tp_pi3pt;
+  delete m_triplet_tp_pi1eta;
+  delete m_triplet_tp_pi2eta;
+  delete m_triplet_tp_pi3eta;
+  delete m_triplet_tp_pis_highest_pt;
+  delete m_triplet_tp_pis_highest_pt_matchL1;
+  delete m_triplet_gen_pi1pt;
+  delete m_triplet_gen_pi2pt;
+  delete m_triplet_gen_pi3pt;
+  delete m_triplet_gen_pi1eta;
+  delete m_triplet_gen_pi2eta;
+  delete m_triplet_gen_pi3eta;
+  delete m_triplet_gen_pis_highest_pt;
+  delete m_triplet_tp_min_pt;
+  delete m_triplet_tp_max_eta;
+  delete m_triplet_tp_all_pt;
+  delete m_triplet_tp_matched_pt;
+  delete m_triplet_tp_all_eta;
+  delete m_triplet_tp_matched_eta;
+  delete m_tp_all_pt;
+  delete m_tp_matched_pt;
+  delete m_tp_all_eta;
+  delete m_tp_matched_eta;
 
   delete m_trkfastjet_eta;
   delete m_trkfastjet_vz;
@@ -1564,6 +1616,31 @@ void L1TrackObjectNtupleMaker::beginJob() {
 	m_triplet_mass_cutflow = new std::vector<float>;
 	m_triplet_pt_cutflow = new std::vector<float>;
 	m_triplet_dz_cutflow = new std::vector<float>;
+  m_triplet_tp_pi1pt = new std::vector<float>;
+  m_triplet_tp_pi2pt = new std::vector<float>;
+  m_triplet_tp_pi3pt = new std::vector<float>;
+  m_triplet_tp_pi1eta = new std::vector<float>;
+  m_triplet_tp_pi2eta = new std::vector<float>;
+  m_triplet_tp_pi3eta = new std::vector<float>;
+  m_triplet_tp_pis_highest_pt = new std::vector<int>;
+  m_triplet_tp_pis_highest_pt_matchL1 = new std::vector<int>;
+  m_triplet_gen_pi1pt = new std::vector<float>;
+  m_triplet_gen_pi2pt = new std::vector<float>;
+  m_triplet_gen_pi3pt = new std::vector<float>;
+  m_triplet_gen_pi1eta = new std::vector<float>;
+  m_triplet_gen_pi2eta = new std::vector<float>;
+  m_triplet_gen_pi3eta = new std::vector<float>;
+  m_triplet_gen_pis_highest_pt = new std::vector<int>;
+  m_triplet_tp_all_pt = new std::vector<float>;
+  m_triplet_tp_matched_pt = new std::vector<float>;
+  m_triplet_tp_all_eta = new std::vector<float>;
+  m_triplet_tp_matched_eta = new std::vector<float>;
+  m_tp_all_pt = new std::vector<float>;
+  m_tp_matched_pt = new std::vector<float>;
+  m_tp_all_eta = new std::vector<float>;
+  m_tp_matched_eta = new std::vector<float>;
+  m_triplet_tp_min_pt = new std::vector<float>;
+  m_triplet_tp_max_eta = new std::vector<float>;
 
   m_trkjetem_pt = new std::vector<float>;
   m_trkjetem_phi = new std::vector<float>;
@@ -1932,6 +2009,32 @@ void L1TrackObjectNtupleMaker::beginJob() {
 		eventTree->Branch("triplet_mass_cutflow", &m_triplet_mass_cutflow);
 		eventTree->Branch("triplet_pt_cutflow", &m_triplet_pt_cutflow);
 		eventTree->Branch("triplet_dz_cutflow", &m_triplet_dz_cutflow);
+    eventTree->Branch("triplet_tp_pi1pt", &m_triplet_tp_pi1pt);
+    eventTree->Branch("triplet_tp_pi2pt", &m_triplet_tp_pi2pt);
+    eventTree->Branch("triplet_tp_pi3pt", &m_triplet_tp_pi3pt);
+    eventTree->Branch("triplet_tp_pi1eta", &m_triplet_tp_pi1eta);
+    eventTree->Branch("triplet_tp_pi2eta", &m_triplet_tp_pi2eta);
+    eventTree->Branch("triplet_tp_pi3eta", &m_triplet_tp_pi3eta);
+    eventTree->Branch("triplet_tp_pis_highest_pt", &m_triplet_tp_pis_highest_pt);
+    eventTree->Branch("triplet_tp_pis_highest_pt_matchL1", &m_triplet_tp_pis_highest_pt_matchL1);
+    eventTree->Branch("triplet_gen_pi1pt", &m_triplet_gen_pi1pt);
+    eventTree->Branch("triplet_gen_pi2pt", &m_triplet_gen_pi2pt);
+    eventTree->Branch("triplet_gen_pi3pt", &m_triplet_gen_pi3pt);
+    eventTree->Branch("triplet_gen_pi1eta", &m_triplet_gen_pi1eta);
+    eventTree->Branch("triplet_gen_pi2eta", &m_triplet_gen_pi2eta);
+    eventTree->Branch("triplet_gen_pi3eta", &m_triplet_gen_pi3eta);
+    eventTree->Branch("triplet_gen_pis_highest_pt", &m_triplet_gen_pis_highest_pt);
+    eventTree->Branch("triplet_tp_all_pt", &m_triplet_tp_all_pt);
+    eventTree->Branch("triplet_tp_matched_pt", &m_triplet_tp_matched_pt);
+    eventTree->Branch("triplet_tp_all_eta", &m_triplet_tp_all_eta);
+    eventTree->Branch("triplet_tp_matched_eta", &m_triplet_tp_matched_eta);
+    eventTree->Branch("tp_all_pt", &m_tp_all_pt);
+    eventTree->Branch("tp_matched_pt", &m_tp_matched_pt);
+    eventTree->Branch("tp_all_eta", &m_tp_all_eta);
+    eventTree->Branch("tp_matched_eta", &m_tp_matched_eta);
+    eventTree->Branch("triplet_tp_min_pt", &m_triplet_tp_min_pt);
+    eventTree->Branch("triplet_tp_max_eta", &m_triplet_tp_max_eta);
+    
 
     if (Displaced == "Displaced" || Displaced == "Both") {
       eventTree->Branch("trkfastjetExt_eta", &m_trkfastjetExt_eta);
@@ -2311,6 +2414,31 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
 		m_triplet_mass_cutflow->clear();
 		m_triplet_pt_cutflow->clear();
 		m_triplet_dz_cutflow->clear();
+    m_triplet_tp_pi1pt->clear();
+    m_triplet_tp_pi2pt->clear();
+    m_triplet_tp_pi3pt->clear();
+    m_triplet_tp_pi1eta->clear();
+    m_triplet_tp_pi2eta->clear();
+    m_triplet_tp_pi3eta->clear();
+    m_triplet_tp_pis_highest_pt->clear();
+    m_triplet_tp_pis_highest_pt_matchL1->clear();
+    m_triplet_gen_pi1pt->clear();
+    m_triplet_gen_pi2pt->clear();
+    m_triplet_gen_pi3pt->clear();
+    m_triplet_gen_pi1eta->clear();
+    m_triplet_gen_pi2eta->clear();
+    m_triplet_gen_pi3eta->clear();
+    m_triplet_gen_pis_highest_pt->clear();
+    m_triplet_tp_all_pt->clear();
+    m_triplet_tp_matched_pt->clear();
+    m_triplet_tp_all_eta->clear();
+    m_triplet_tp_matched_eta->clear();
+    m_tp_all_pt->clear();
+    m_tp_matched_pt->clear();
+    m_tp_all_eta->clear();
+    m_tp_matched_eta->clear();
+    m_triplet_tp_min_pt->clear();
+    m_triplet_tp_max_eta->clear();
 
     if (Displaced == "Displaced" || Displaced == "Both") {
       m_trkjetExt_eta->clear();
@@ -3843,12 +3971,157 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       }
     }
 
-    // W3Pi gen plots
+    // W3Pi tracking-particle studies
+    std::vector<float> tpPtTriplet = {-99, -99, -99};
+    std::vector<float> tpEtaTriplet = {-99, -99, -99};
+    std::vector<int> tpPdgidTriplet = {-99, -99, -99};
+    std::vector<int> tpPdgidMotherTriplet = {-99, -99, -99};
+    std::vector<bool> tpMatchedL1Triplet = {false, false, false};
+    bool three_highest_pts = false;
+
+    this_tp = 0;
+    //std::vector<TrackingParticle>::const_iterator iterTP;
+    for (iterTP = TrackingParticleHandle->begin(); iterTP != TrackingParticleHandle->end(); ++iterTP) {
+      edm::Ptr<TrackingParticle> tp_ptr(TrackingParticleHandle, this_tp);
+      std::vector<edm::Ptr<TTTrack<Ref_Phase2TrackerDigi_>>> matchedTracks = MCTruthTTTrackHandle->findTTTrackPtrs(tp_ptr);
+      this_tp++;
+
+      // Tracking efficiency plots for all TPs
+      if (iterTP->pt() >= 2 && std::abs(iterTP->eta()) <= 2.4) {
+        m_tp_all_pt->push_back(iterTP->pt());
+        m_tp_all_eta->push_back(iterTP->eta());
+
+        if (matchedTracks.size() > 0) {
+          m_tp_matched_pt->push_back(iterTP->pt());
+          m_tp_matched_eta->push_back(iterTP->eta());
+        } else {
+          m_tp_matched_pt->push_back(-999);
+          m_tp_matched_eta->push_back(-999);
+        }
+      }
+
+      // Find three highest-pt tracking particles
+      if (iterTP->pt() > tpPtTriplet[0]) {
+        tpPtTriplet[2] = tpPtTriplet[1];
+        tpPtTriplet[1] = tpPtTriplet[0];
+        tpEtaTriplet[2] = tpEtaTriplet[1];
+        tpEtaTriplet[1] = tpEtaTriplet[0];
+        tpPdgidTriplet[2] = tpPdgidTriplet[1];
+        tpPdgidTriplet[1] = tpPdgidTriplet[0];
+        tpPdgidMotherTriplet[2] = tpPdgidMotherTriplet[1];
+        tpPdgidMotherTriplet[1] = tpPdgidMotherTriplet[0];
+        tpMatchedL1Triplet[2] = tpMatchedL1Triplet[1];
+        tpMatchedL1Triplet[1] = tpMatchedL1Triplet[0];
+        tpPtTriplet[0] = iterTP->pt();
+        tpEtaTriplet[0] = iterTP->eta();
+        tpPdgidTriplet[0] = iterTP->pdgId();
+        if (iterTP->genParticles().size() > 0) {
+          tpPdgidMotherTriplet[0] = iterTP->genParticles().at(0)->mother(0)->pdgId();
+        }
+        if (matchedTracks.size() > 0) {
+          tpMatchedL1Triplet[0] = true;
+        } else {
+          tpMatchedL1Triplet[0] = false;
+        }
+      } else if (iterTP->pt() > tpPtTriplet[1]) {
+        tpPtTriplet[2] = tpPtTriplet[1];
+        tpEtaTriplet[2] = tpEtaTriplet[1];
+        tpPdgidTriplet[2] = tpPdgidTriplet[1];
+        tpPdgidMotherTriplet[2] = tpPdgidMotherTriplet[1];
+        tpMatchedL1Triplet[2] = tpMatchedL1Triplet[1];
+        tpPtTriplet[1] = iterTP->pt();
+        tpEtaTriplet[1] = iterTP->eta();
+        tpPdgidTriplet[1] = iterTP->pdgId();
+        if (iterTP->genParticles().size() > 0) {
+          tpPdgidMotherTriplet[1] = iterTP->genParticles().at(0)->mother(0)->pdgId();
+        }
+        if (matchedTracks.size() > 0) {
+          tpMatchedL1Triplet[1] = true;
+        } else {
+          tpMatchedL1Triplet[1] = false;
+        }
+      } else if (iterTP->pt() > tpPtTriplet[2]) {
+        tpPtTriplet[2] = iterTP->pt();
+        tpEtaTriplet[2] = iterTP->eta();
+        tpPdgidTriplet[2] = iterTP->pdgId();
+        if (iterTP->genParticles().size() > 0) {
+          tpPdgidMotherTriplet[2] = iterTP->genParticles().at(0)->mother(0)->pdgId();
+        }
+        if (matchedTracks.size() > 0) {
+          tpMatchedL1Triplet[2] = true;
+        } else {
+          tpMatchedL1Triplet[2] = false;
+        }
+      }
+    }
+
+  
+
+    if (std::abs(tpPdgidTriplet[0]) == 211 && std::abs(tpPdgidTriplet[1]) == 211 && std::abs(tpPdgidTriplet[2]) == 211) {
+      if (std::abs(tpPdgidMotherTriplet[0]) == 24 && std::abs(tpPdgidMotherTriplet[1]) == 24 && std::abs(tpPdgidMotherTriplet[2]) == 24) {
+        m_triplet_tp_pi1pt->push_back(tpPtTriplet[0]);
+        m_triplet_tp_pi2pt->push_back(tpPtTriplet[1]);
+        m_triplet_tp_pi3pt->push_back(tpPtTriplet[2]);
+        m_triplet_tp_pi1eta->push_back(tpEtaTriplet[0]);
+        m_triplet_tp_pi2eta->push_back(tpEtaTriplet[1]);
+        m_triplet_tp_pi3eta->push_back(tpEtaTriplet[2]);
+
+        if (tpPtTriplet[0] >= 2 && std::abs(tpEtaTriplet[0]) <= 2.4) {
+          m_triplet_tp_all_pt->push_back(tpPtTriplet[0]);
+          m_triplet_tp_all_eta->push_back(tpEtaTriplet[0]);
+          if (tpMatchedL1Triplet[0]) {
+            m_triplet_tp_matched_pt->push_back(tpPtTriplet[0]);
+            m_triplet_tp_matched_eta->push_back(tpEtaTriplet[0]);
+          }
+        }
+        if (tpPtTriplet[1] >= 2 && std::abs(tpEtaTriplet[1]) <= 2.4) {
+          m_triplet_tp_all_pt->push_back(tpPtTriplet[1]);
+          m_triplet_tp_all_eta->push_back(tpEtaTriplet[1]);
+          if (tpMatchedL1Triplet[1]) {
+            m_triplet_tp_matched_pt->push_back(tpPtTriplet[1]);
+            m_triplet_tp_matched_eta->push_back(tpEtaTriplet[1]);
+          }
+        }
+        if (tpPtTriplet[2] >= 2 && std::abs(tpEtaTriplet[2]) <= 2.4) {
+          m_triplet_tp_all_pt->push_back(tpPtTriplet[2]);
+          m_triplet_tp_all_eta->push_back(tpEtaTriplet[2]);
+          if (tpMatchedL1Triplet[2]) {
+            m_triplet_tp_matched_pt->push_back(tpPtTriplet[2]);
+            m_triplet_tp_matched_eta->push_back(tpEtaTriplet[2]);
+          }
+        }
+
+        float triplet_pt_min = std::min(std::min(tpPtTriplet[0], tpPtTriplet[1]), tpPtTriplet[2]);
+        float triplet_eta_max = std::max(std::max(std::abs(tpEtaTriplet[0]), std::abs(tpEtaTriplet[1])), std::abs(tpEtaTriplet[2]));
+
+        m_triplet_tp_min_pt->push_back(triplet_pt_min);
+        m_triplet_tp_max_eta->push_back(triplet_eta_max);
+
+        if (tpPtTriplet[0] >= 2 && tpPtTriplet[1] >= 2 && tpPtTriplet[2] >= 2 && std::abs(tpEtaTriplet[0]) <= 2.4 && std::abs(tpEtaTriplet[1]) <= 2.4 && std::abs(tpEtaTriplet[2]) <= 2.4) {
+          m_triplet_tp_pis_highest_pt->push_back(1);
+          
+          if (tpMatchedL1Triplet[0] == true && tpMatchedL1Triplet[1] == true && tpMatchedL1Triplet[2] == true) {
+            m_triplet_tp_pis_highest_pt_matchL1->push_back(1);
+          } else {
+            m_triplet_tp_pis_highest_pt_matchL1->push_back(0);
+          }
+        } else {
+          m_triplet_tp_pis_highest_pt->push_back(0);
+        }
+      }
+    }
+
+    // W3Pi gen-particle studies
     int nPi_W_daughter = 0;
     std::vector<float> piPts;
+    std::vector<float> genPtTriplet = {-99, -99, -99};
+    std::vector<float> genEtaTriplet = {-99, -99, -99};
+    std::vector<int> genPdgidTriplet = {-99, -99, -99};
+    std::vector<int> genPdgidMotherTriplet = {-99, -99, -99};
+
     for (auto genpartIter = GenParticleHandle->begin(); genpartIter != GenParticleHandle->end(); ++genpartIter) {
       int status = genpartIter->status();
-      if (status != 1) { continue; }
+      if (status != 1) { continue; }  // Only interested in final state particles
 
       // Compute pdgIds of W daughters
       if (genpartIter->numberOfMothers() > 0) {
@@ -3866,6 +4139,42 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
             }
           }
       }
+
+      // Find three highest-pt gen particles
+      if (genpartIter->pt() > genPtTriplet[0]) {
+        genPtTriplet[2] = genPtTriplet[1];
+        genPtTriplet[1] = genPtTriplet[0];
+        genEtaTriplet[2] = genEtaTriplet[1];
+        genEtaTriplet[1] = genEtaTriplet[0];
+        genPdgidTriplet[2] = genPdgidTriplet[1];
+        genPdgidTriplet[1] = genPdgidTriplet[0];
+        genPdgidMotherTriplet[2] = genPdgidMotherTriplet[1];
+        genPdgidMotherTriplet[1] = genPdgidMotherTriplet[0];
+        genPtTriplet[0] = genpartIter->pt();
+        genEtaTriplet[0] = genpartIter->eta();
+        genPdgidTriplet[0] = genpartIter->pdgId();
+        if (genpartIter->numberOfMothers() > 0) {
+          genPdgidMotherTriplet[0] = genpartIter->mother(0)->pdgId();
+        } 
+      } else if (genpartIter->pt() > genPtTriplet[1]) {
+        genPtTriplet[2] = genPtTriplet[1];
+        genEtaTriplet[2] = genEtaTriplet[1];
+        genPdgidTriplet[2] = genPdgidTriplet[1];
+        genPdgidMotherTriplet[2] = genPdgidMotherTriplet[1];
+        genPtTriplet[1] = genpartIter->pt();
+        genEtaTriplet[1] = genpartIter->eta();
+        genPdgidTriplet[1] = genpartIter->pdgId();
+        if (genpartIter->numberOfMothers() > 0) {
+          genPdgidMotherTriplet[1] = genpartIter->mother(0)->pdgId();
+        } 
+      } else if (genpartIter->pt() > genPtTriplet[2]) {
+        genPtTriplet[2] = genpartIter->pt();
+        genEtaTriplet[2] = genpartIter->eta();
+        genPdgidTriplet[2] = genpartIter->pdgId();
+        if (genpartIter->numberOfMothers() > 0) {
+          genPdgidMotherTriplet[2] = genpartIter->mother(0)->pdgId();
+        } 
+      }
     }
 
     // Sort pion pts in descending order
@@ -3877,6 +4186,25 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       m_gen_pi1pt->push_back(piPts[0]);
       m_gen_pi2pt->push_back(piPts[1]);
       m_gen_pi3pt->push_back(piPts[2]);
+    }
+
+    // Gen particle efficiency studies
+    if (std::abs(genPdgidTriplet[0]) == 211 && std::abs(genPdgidTriplet[1]) == 211 && std::abs(genPdgidTriplet[2]) == 211) {
+      if (std::abs(genPdgidMotherTriplet[0]) == 24 && std::abs(genPdgidMotherTriplet[1]) == 24 && std::abs(genPdgidMotherTriplet[2]) == 24) {
+        m_triplet_gen_pi1pt->push_back(genPtTriplet[0]);
+        m_triplet_gen_pi2pt->push_back(genPtTriplet[1]);
+        m_triplet_gen_pi3pt->push_back(genPtTriplet[2]);
+        m_triplet_gen_pi1eta->push_back(genEtaTriplet[0]);
+        m_triplet_gen_pi2eta->push_back(genEtaTriplet[1]);
+        m_triplet_gen_pi3eta->push_back(genEtaTriplet[2]);
+        if (genPtTriplet[0] >= 2 && genPtTriplet[1] >= 2 && genPtTriplet[2] >= 2) {
+          if (std::abs(genEtaTriplet[0]) < 2.4 && std::abs(genEtaTriplet[1]) < 2.4 && std::abs(genEtaTriplet[2]) < 2.4) {
+            m_triplet_gen_pis_highest_pt->push_back(1);
+          }
+        } else {
+          m_triplet_gen_pis_highest_pt->push_back(0);
+        }
+      }
     }
 
     // Reco triplet branches
@@ -4021,7 +4349,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
           }
           );
 
-          // Ensure triplet information isn't null before ascessing
+          // Ensure triplet information isn't null before accessing
 					int tp1_pdgId = -999;
 					int tp1_pdgId_mother = -999;
 					int tp2_pdgId = -999;

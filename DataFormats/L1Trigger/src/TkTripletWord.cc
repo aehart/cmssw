@@ -4,10 +4,17 @@
 #include "DataFormats/L1Trigger/interface/TkTripletWord.h"
 
 namespace l1t {
-  TkTripletWord::TkTripletWord(valid_t valid,
-                               WMass_t mass,
-                               unassigned_t unassigned) {
-    setTkTripletWord(valid, mass, unassigned);
+  TkTripletWord::TkTripletWord(tktriplet_valid_t valid,
+                               tktriplet_pt_t pt,
+                               tktriplet_phi_t phi,
+                               tktriplet_eta_t eta,
+                               tktriplet_mass_t mass,
+                               tktriplet_trk_pt_t trk1Pt,
+                               tktriplet_trk_pt_t trk2Pt,
+                               tktriplet_trk_pt_t trk3Pt,
+                               tktriplet_charge_t charge,
+                               tktriplet_unassigned_t unassigned) {
+    setTkTripletWord(valid, pt, phi, eta, mass, trk1Pt, trk2Pt, trk3Pt, charge, unassigned);
   }
 
   template <class packVarType>
@@ -20,13 +27,28 @@ namespace l1t {
     currentOffset += wordChunkSize;
   }
 
-  void TkTripletWord::setTkTripletWord(valid_t valid,
-                                       WMass_t mass,
-                                       unassigned_t unassigned) {
+  void TkTripletWord::setTkTripletWord(tktriplet_valid_t valid,
+                                       tktriplet_pt_t pt,
+                                       tktriplet_phi_t phi,
+                                       tktriplet_eta_t eta,
+                                       tktriplet_mass_t mass,
+                                       tktriplet_trk_pt_t trk1Pt,
+                                       tktriplet_trk_pt_t trk2Pt,
+                                       tktriplet_trk_pt_t trk3Pt,
+                                       tktriplet_charge_t charge,
+                                       tktriplet_unassigned_t unassigned) {
     // pack the TkTriplet word
     unsigned int offset = 0;
     packIntoWord(offset, TkTripletBitWidths::kValidSize, valid);
+    packIntoWord(offset, TkTripletBitWidths::kPtSize, pt);
+    packIntoWord(offset, TkTripletBitWidths::kPhiSize, phi);
+    packIntoWord(offset, TkTripletBitWidths::kEtaSize, eta);
     packIntoWord(offset, TkTripletBitWidths::kMassSize, mass);
+    packIntoWord(offset, TkTripletBitWidths::kTrk1PtSize, trk1Pt);
+    packIntoWord(offset, TkTripletBitWidths::kTrk2PtSize, trk2Pt);
+    packIntoWord(offset, TkTripletBitWidths::kTrk3PtSize, trk3Pt);
+    packIntoWord(offset, TkTripletBitWidths::kChargeSize, charge);
+    packIntoWord(offset, TkTripletBitWidths::kUnassignedSize, unassigned);
   }
 
 }  //namespace l1t

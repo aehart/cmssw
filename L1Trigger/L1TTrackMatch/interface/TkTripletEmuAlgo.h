@@ -24,15 +24,26 @@ namespace l1ttripletemu {
 
     // Triplet word definitions
     const unsigned int kValidSize{1};
-    const unsigned int kMassSize{23};
-    const unsigned int kMassMagSize{17};
-    const unsigned int kUnassignedSize{64 - (kMassSize + kValidSize)};
+    const unsigned int kPtSize{16};
+    const unsigned int kPtMagSize{11};
+    const unsigned int kPhiSize{13};
+    const unsigned int kEtaSize{14};
+    const unsigned int kMassSize{13};
+    const unsigned int kMassMagSize{7};
+    const unsigned int kTrk1PtSize{13};
+    const unsigned int kTrk1PtMagSize{8};
+    const unsigned int kTrk2PtSize{13};
+    const unsigned int kTrk2PtMagSize{8};
+    const unsigned int kTrk3PtSize{13};
+    const unsigned int kTrk3PtMagSize{8};
+    const unsigned int kChargeSize{1};
+    const unsigned int kUnassignedSize{128 - (kChargeSize + kTrk3PtSize + kTrk2PtSize + kTrk1PtSize + kMassSize + kEtaSize + kPhiSize + kPtSize + kValidSize)};
 
     // Track properties
-    const unsigned int kPtSize{14};
-    const unsigned int kPtMagSize{9};
-    const unsigned int kEtaSize{16};
-    const unsigned int kEtaMagSize{3};
+    const unsigned int kTkPtSize{14};
+    const unsigned int kTkPtMagSize{9};
+    const unsigned int kTkEtaSize{16};
+    const unsigned int kTkEtaMagSize{3};
 
     // LUT definitions (cos, cosh, sinh)
     const unsigned int kGlobalPhiExtra{4};
@@ -50,11 +61,21 @@ namespace l1ttripletemu {
     const unsigned int kSinhLUTBins{(1 << kSinhLUTTableSize) + 1};  // size of sinh LUT
     const unsigned int kCosLUTShift{TTTrack_TrackWord::TrackBitWidths::kPhiSize - kCosLUTTableSize};
 
-    // AP type definitions
-    typedef ap_ufixed<kMassSize, kMassMagSize, AP_RND_CONV, AP_SAT>               WMass_t;
-    typedef ap_ufixed<kPtSize, kPtMagSize, AP_RND_CONV, AP_SAT>                   pt_t;   
-    typedef ap_fixed<kPtSize+1, kPtMagSize+1, AP_RND_CONV, AP_SAT>                pxyz_t;
-    typedef ap_fixed<kEtaSize, kEtaMagSize, AP_RND_CONV, AP_SAT>                  eta_t;
+    // Triplet word type definitions
+    typedef ap_uint<kValidSize>                                         tktriplet_valid_t;
+    typedef ap_ufixed<kPtSize, kPtMagSize, AP_RND_CONV, AP_SAT>         tktriplet_pt_t;
+    typedef ap_int<kPhiSize>                                            tktriplet_phi_t;
+    typedef ap_int<kEtaSize>                                            tktriplet_eta_t;
+    typedef ap_ufixed<kMassSize, kMassMagSize, AP_RND_CONV, AP_SAT>     tktriplet_mass_t;
+    typedef ap_ufixed<kTrk1PtSize, kTrk1PtMagSize, AP_RND_CONV, AP_SAT> tktriplet_trk_pt_t;
+    typedef ap_uint<kChargeSize>                                        tktriplet_charge_t;
+    typedef ap_uint<kUnassignedSize>                                    tktriplet_unassigned_t;
+
+    typedef ap_ufixed<kMassSize+7, kMassMagSize+7, AP_RND_CONV, AP_SAT> tktriplet_mass_sq_t;
+
+    typedef ap_ufixed<kTkPtSize, kTkPtMagSize, AP_RND_CONV, AP_SAT>               pt_t;   
+    typedef ap_fixed<kTkPtSize+1, kTkPtMagSize+1, AP_RND_CONV, AP_SAT>            pxyz_t;
+    typedef ap_fixed<kTkEtaSize, kTkEtaMagSize, AP_RND_CONV, AP_SAT>              eta_t;
     typedef ap_int<TTTrack_TrackWord::TrackBitWidths::kPhiSize + kGlobalPhiExtra> global_phi_t;
     typedef ap_int<kCosLUTTableSize + 1>                                          cos_lut_index_t;
     typedef ap_ufixed<kCosLUTSize, kCosLUTMagSize, AP_RND_CONV, AP_SAT>           cos_lut_fixed_t;
@@ -72,7 +93,16 @@ namespace l1ttripletemu {
 
     // Track triplet object
     struct TkTriplet {
-        WMass_t mW;
+        tktriplet_valid_t      valid;
+        tktriplet_pt_t         pt;
+        tktriplet_phi_t        phi;
+        tktriplet_eta_t        eta;
+        tktriplet_mass_t       mass;
+        tktriplet_trk_pt_t     trk1Pt;
+        tktriplet_trk_pt_t     trk2Pt;
+        tktriplet_trk_pt_t     trk3Pt;
+        tktriplet_charge_t     charge;
+        tktriplet_unassigned_t unassigned;
     };
 
     // ---- FUNCTION DEFINITIONS ----

@@ -102,6 +102,8 @@ class L1TrackTripletEmulatorProducer : public stream::EDProducer<> {
         l1ttripletemu::pt_t f_Pt;
         l1ttripletemu::eta_t f_Eta;
         l1ttripletemu::global_phi_t globalPhi;
+        TTTrack_TrackWord::phi_t localPhi;
+        int phiSector;
         double Pt;
         double Eta;
         double Phi;
@@ -211,11 +213,11 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         return;
     }
     
-    L1track trk1{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
-    L1track trk2{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
-    L1track trk3{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
+    L1track trk1{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
+    L1track trk2{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
+    L1track trk3{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
     
-    l1ttripletemu::WMass_t f_WMass = 0;
+    l1ttripletemu::tktriplet_mass_sq_t f_tktriplet_mass_sq = 0;
     int this_l1track = 0;
     int current_track_idx = -1;
     int nTracks = (*TTTrackHandle).size();
@@ -233,6 +235,8 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             trk1.f_Pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
             trk1.f_Eta = (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track);
             trk1.globalPhi = l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]);
+            trk1.phiSector = current_track->phiSector();
+            trk1.localPhi = (TTTrack_TrackWord::phi_t) current_track->getPhiWord(); 
             if (use_float_track_precision_) {
                 trk1.Pt = current_track->momentum().perp();
                 trk1.Eta = current_track->eta();
@@ -257,6 +261,8 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             trk2.f_Pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
             trk2.f_Eta = (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track);
             trk2.globalPhi = l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]);
+            trk2.localPhi = (TTTrack_TrackWord::phi_t) current_track->getPhiWord();
+            trk2.phiSector = current_track->phiSector();
             if (use_float_track_precision_) {
                 trk2.Pt = current_track->momentum().perp();
                 trk2.Eta = current_track->eta();
@@ -280,6 +286,8 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             trk3.f_Pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
             trk3.f_Eta = (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track);
             trk3.globalPhi = l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]);
+            trk3.localPhi = (TTTrack_TrackWord::phi_t) current_track->getPhiWord();
+            trk3.phiSector = current_track->phiSector();
             if (use_float_track_precision_) {
                 trk3.Pt = current_track->momentum().perp();
                 trk3.Eta = current_track->eta();
@@ -309,9 +317,9 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             // DEBUG: PRINT TRACK TRIPLET FIELDS
             /*
             std::cout << "-----------------------------------" << std::endl;
-            std::cout << "Trk1: pT = " << trk1.f_Pt << ", Eta = " << trk1.f_Eta << ", Phi = " << trk1.globalPhi << std::endl;
-            std::cout << "Trk2: pT = " << trk2.f_Pt << ", Eta = " << trk2.f_Eta << ", Phi = " << trk2.globalPhi << std::endl;
-            std::cout << "Trk3: pT = " << trk3.f_Pt << ", Eta = " << trk3.f_Eta << ", Phi = " << trk3.globalPhi << std::endl;
+            std::cout << "Trk1: pT = " << trk1.f_Pt << ", Eta = " << trk1.f_Eta << ", globalPhi = " << trk1.globalPhi << std::endl;
+            std::cout << "Trk2: pT = " << trk2.f_Pt << ", Eta = " << trk2.f_Eta << ", globalPhi = " << trk2.globalPhi << std::endl;
+            std::cout << "Trk3: pT = " << trk3.f_Pt << ", Eta = " << trk3.f_Eta << ", globalPhi = " << trk3.globalPhi << std::endl;
             std::cout << "-----------------------------------" << std::endl;
             */
 
@@ -334,9 +342,9 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             l1ttripletemu::pxyz_t p3 = (l1ttripletemu::pxyz_t) trk3.f_Pt * coshLUT_[coshIndex3];
 
             /*
-            std::cout << "p1: Float = " << trk1.Pt * cosh(trk1.Eta) << ", FW = " << p1 << std::endl;
-            std::cout << "p2: Float = " << trk2.Pt * cosh(trk2.Eta) << ", FW = " << p2 << std::endl;
-            std::cout << "p3: Float = " << trk3.Pt * cosh(trk3.Eta) << ", FW = " << p3 << std::endl;
+            std::cout << "p1 (EM) = " << p1 << std::endl;
+            std::cout << "p2 (EM) = " << p2 << std::endl;
+            std::cout << "p3 (EM) = " << p3 << std::endl;
             std::cout << "-----------------------------------" << std::endl;
             */
 
@@ -354,7 +362,7 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             l1ttripletemu::pxyz_t px1 = 0, py1 = 0;
             l1ttripletemu::pxyz_t px2 = 0, py2 = 0;
             l1ttripletemu::pxyz_t px3 = 0, py3 = 0;
-            L1track tmp_trk{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
+            L1track tmp_trk{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0};
 
             // W mass calculation using LUTs (as in firmware)
             for (int tk = 0; tk < 3; tk++) {
@@ -419,14 +427,14 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             }
 
             /*
-            std::cout << "px (FW) = (" << px1 << ", " << px2 << ", " << px3 << ")" << std::endl;
-            std::cout << "py (FW) = (" << py1 << ", " << py2 << ", " << py3 << ")" << std::endl;
-            std::cout << "pz (FW) = (" << pz1 << ", " << pz2 << ", " << pz3 << ")" << std::endl;
+            std::cout << "px (EM) = (" << px1 << ", " << px2 << ", " << px3 << ")" << std::endl;
+            std::cout << "py (EM) = (" << py1 << ", " << py2 << ", " << py3 << ")" << std::endl;
+            std::cout << "pz (EM) = (" << pz1 << ", " << pz2 << ", " << pz3 << ")" << std::endl;
             std::cout << "-----------------------------------" << std::endl;
             */
 
             // W mass calculation
-            f_WMass = (l1ttripletemu::WMass_t) (
+            f_tktriplet_mass_sq = (l1ttripletemu::tktriplet_mass_sq_t) (
                 (p1 + p2 + p3)*(p1 + p2 + p3)
                 - (px1 + px2 + px3)*(px1 + px2 + px3)
                 - (py1 + py2 + py3)*(py1 + py2 + py3)
@@ -509,12 +517,19 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         iEvent.put(std::move(L1TrackTripletContainer), OutputDigisName);
         
         // Test vector outputs
-        l1t::TkTripletWord::valid_t val = 1;
+        l1t::TkTripletWord::tktriplet_valid_t val = 1;
         l1ttripletemu::TkTriplet tkTriplet;  
-        tkTriplet.mW = f_WMass; 
-        l1t::TkTripletWord::unassigned_t unassigned = 0;
+        tkTriplet.pt = 0;
+        tkTriplet.phi = 0;
+        tkTriplet.eta = 0;
+        tkTriplet.mass = (l1ttripletemu::tktriplet_mass_t) std::sqrt((float) f_tktriplet_mass_sq); 
+        tkTriplet.trk1Pt = 0;
+        tkTriplet.trk2Pt = 0;
+        tkTriplet.trk3Pt = 0;
+        tkTriplet.charge = 0;
+        l1t::TkTripletWord::tktriplet_unassigned_t unassigned = 0;
         
-        l1t::TkTripletWord L1Triplet(val, tkTriplet.mW, unassigned);
+        l1t::TkTripletWord L1Triplet(val, tkTriplet.pt, tkTriplet.phi, tkTriplet.eta, tkTriplet.mass, tkTriplet.trk1Pt, tkTriplet.trk2Pt, tkTriplet.trk3Pt, tkTriplet.charge, unassigned);
 
         // CODE FOR DEBUGGING EMU MASS OUTPUT
         constexpr char const* RED   = "\033[31m";
@@ -523,17 +538,19 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
 
         float floatWMassSq = (pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M();
 
+        l1ttripletemu::tktriplet_mass_t tktriplet_mass = (l1ttripletemu::tktriplet_mass_t) std::sqrt((float)f_tktriplet_mass_sq);
         std::cout << "===================================================" << std::endl;
-        std::cout << "Float Mass^2 Word: " << ((l1ttripletemu::WMass_t)floatWMassSq).to_string(2).c_str() << std::endl;
-        std::cout << "FW Mass^2 Word   : " << f_WMass.to_string(2).c_str() << std::endl;
-        std::cout << "W Mass^2 (float)    = " << floatWMassSq << std::endl;
-        std::cout << "W Mass^2 (firmware) = " << f_WMass.to_string(10).c_str() << std::endl;
+        //std::cout << "Float Mass Word: " << ((l1ttripletemu::tktriplet_mass_sq_t)floatWMassSq).to_string(2).c_str() << std::endl;
+        std::cout << "W Mass (float)    = " << std::sqrt(floatWMassSq) << std::endl;
+        std::cout << "EM Mass Word   : " << tktriplet_mass.to_string(2).c_str() << std::endl;
+        std::cout << "W Mass (emu) = " << tktriplet_mass.to_string(10).c_str() << std::endl;
         std::cout << "===================================================" << std::endl;
         std::cout << "Word testing (dec): " << L1Triplet.massWord().to_string(10).c_str() << std::endl;
         std::cout << "Word testing (bin): " << L1Triplet.massWord().to_string(2).c_str() << std::endl;
         std::cout << "Word testing (hex): " << L1Triplet.massWord().to_string(16).c_str() << std::endl;
+        
  
-        double mass_diff = std::abs(std::sqrt((pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M()) - std::sqrt((double) f_WMass));
+        double mass_diff = std::abs(std::sqrt((pion1 + pion2 + pion3).M()*(pion1 + pion2 + pion3).M()) - std::sqrt((double) f_tktriplet_mass_sq));
         if (mass_diff > 2.0) {
             std::cout << RED << "Mass Difference = " << mass_diff << std::endl << RESET;
         } else {
