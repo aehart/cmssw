@@ -44,7 +44,7 @@ namespace l1t::demo::codecs {
       tripletWords.push_back(encodeTriplet(triplet));
     */
     for (size_t i = 0; i < triplets.size(); i++) {
-      tripletWords.at(i).push_back(encodeTriplet(triplets.at(i)));
+      tripletWords.at(0).push_back(encodeTriplet(triplets.at(i)));
     }
 
     std::array<std::vector<ap_uint<64>>, 1> linkData;
