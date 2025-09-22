@@ -667,6 +667,12 @@ private:
   std::vector<float>* m_tp_matched_pt;
   std::vector<float>* m_tp_all_eta;
   std::vector<float>* m_tp_matched_eta;
+  std::vector<int>* m_triplet_tp_min_nstubs;
+  std::vector<int>* m_triplet_tp_max_nstublayers;
+  std::vector<int>* m_tp_all_nstubs;
+  std::vector<int>* m_tp_all_nstublayers;
+  std::vector<int>* m_tp_all_cut_nstubs;
+  std::vector<int>* m_tp_all_cut_nstublayers;
 
 
   // W3Pi gen-level quantities
@@ -1212,6 +1218,12 @@ void L1TrackObjectNtupleMaker::endJob() {
   delete m_tp_matched_pt;
   delete m_tp_all_eta;
   delete m_tp_matched_eta;
+  delete m_triplet_tp_min_nstubs;
+  delete m_triplet_tp_max_nstublayers;
+  delete m_tp_all_nstubs;
+  delete m_tp_all_nstublayers;
+  delete m_tp_all_nstubs;
+  delete m_tp_all_nstublayers;
 
   delete m_trkfastjet_eta;
   delete m_trkfastjet_vz;
@@ -1641,6 +1653,12 @@ void L1TrackObjectNtupleMaker::beginJob() {
   m_tp_matched_eta = new std::vector<float>;
   m_triplet_tp_min_pt = new std::vector<float>;
   m_triplet_tp_max_eta = new std::vector<float>;
+  m_triplet_tp_min_nstubs = new std::vector<int>;
+  m_triplet_tp_max_nstublayers = new std::vector<int>;
+  m_tp_all_nstubs = new std::vector<int>;
+  m_tp_all_nstublayers = new std::vector<int>;
+  m_tp_all_cut_nstubs = new std::vector<int>;
+  m_tp_all_cut_nstublayers = new std::vector<int>;
 
   m_trkjetem_pt = new std::vector<float>;
   m_trkjetem_phi = new std::vector<float>;
@@ -2034,8 +2052,13 @@ void L1TrackObjectNtupleMaker::beginJob() {
     eventTree->Branch("tp_matched_eta", &m_tp_matched_eta);
     eventTree->Branch("triplet_tp_min_pt", &m_triplet_tp_min_pt);
     eventTree->Branch("triplet_tp_max_eta", &m_triplet_tp_max_eta);
+    eventTree->Branch("triplet_tp_min_nstubs", &m_triplet_tp_min_nstubs);
+    eventTree->Branch("triplet_tp_max_nstublayers", &m_triplet_tp_max_nstublayers);
+    eventTree->Branch("tp_all_nstubs", &m_tp_all_nstubs);
+    eventTree->Branch("tp_all_nstublayers", &m_tp_all_nstublayers);
+    eventTree->Branch("tp_all_cut_nstubs", &m_tp_all_cut_nstubs);
+    eventTree->Branch("tp_all_cut_nstublayers", &m_tp_all_cut_nstublayers);
     
-
     if (Displaced == "Displaced" || Displaced == "Both") {
       eventTree->Branch("trkfastjetExt_eta", &m_trkfastjetExt_eta);
       eventTree->Branch("trkfastjetExt_vz", &m_trkfastjetExt_vz);
@@ -2439,6 +2462,12 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     m_tp_matched_eta->clear();
     m_triplet_tp_min_pt->clear();
     m_triplet_tp_max_eta->clear();
+    m_triplet_tp_min_nstubs->clear();
+    m_triplet_tp_max_nstublayers->clear();
+    m_tp_all_nstubs->clear();
+    m_tp_all_nstublayers->clear();
+    m_tp_all_cut_nstubs->clear();
+    m_tp_all_cut_nstublayers->clear();
 
     if (Displaced == "Displaced" || Displaced == "Both") {
       m_trkjetExt_eta->clear();
@@ -3977,6 +4006,8 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     std::vector<int> tpPdgidTriplet = {-99, -99, -99};
     std::vector<int> tpPdgidMotherTriplet = {-99, -99, -99};
     std::vector<bool> tpMatchedL1Triplet = {false, false, false};
+    std::vector<int> tpNStubsTriplet = {-1, -1, -1};
+    std::vector<int> tpNStubLayersTriplet = {-1, -1, -1};
     bool three_highest_pts = false;
 
     this_tp = 0;
@@ -3991,7 +4022,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       int nStubTP = (int)theStubRefs.size();
 
       // how many layers/disks have stubs?
-      int hasStubInLayer[11] = {0};
+      int hasStubInLayer[11] = {0}; 
       for (auto& theStubRef : theStubRefs) {
         DetId detid(theStubRef->getDetId());
 
@@ -4018,6 +4049,17 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
           nStubLayerTP_g += 1;
       }
 
+      // Fill all TP nstub branches before cuts
+      if (iterTP->charge() != 0) {
+        m_tp_all_nstubs->push_back(nStubTP);
+        m_tp_all_nstublayers->push_back(nStubLayerTP);
+
+        if (iterTP->pt() >= 2 && std::abs(iterTP->eta()) <= 2.4) {
+          m_tp_all_cut_nstubs->push_back(nStubTP);
+          m_tp_all_cut_nstublayers->push_back(nStubLayerTP);
+        }
+      }
+
       if (TP_minNStub > 0) {
         if (nStubTP < TP_minNStub) {
           continue;
@@ -4030,7 +4072,6 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
           continue;
         }
       }
-
 
       // Tracking efficiency plots for all TPs
       if (iterTP->pt() >= 2 && std::abs(iterTP->eta()) <= 2.4) {
@@ -4058,6 +4099,10 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
         tpPdgidMotherTriplet[1] = tpPdgidMotherTriplet[0];
         tpMatchedL1Triplet[2] = tpMatchedL1Triplet[1];
         tpMatchedL1Triplet[1] = tpMatchedL1Triplet[0];
+        tpNStubsTriplet[2] = tpNStubsTriplet[1];
+        tpNStubsTriplet[1] = tpNStubsTriplet[0];
+        tpNStubLayersTriplet[2] = tpNStubLayersTriplet[1];
+        tpNStubLayersTriplet[1] = tpNStubLayersTriplet[0];
         tpPtTriplet[0] = iterTP->pt();
         tpEtaTriplet[0] = iterTP->eta();
         tpPdgidTriplet[0] = iterTP->pdgId();
@@ -4069,12 +4114,16 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
         } else {
           tpMatchedL1Triplet[0] = false;
         }
+        tpNStubsTriplet[0] = nStubTP;
+        tpNStubLayersTriplet[0] = nStubLayerTP;
       } else if (iterTP->pt() > tpPtTriplet[1]) {
         tpPtTriplet[2] = tpPtTriplet[1];
         tpEtaTriplet[2] = tpEtaTriplet[1];
         tpPdgidTriplet[2] = tpPdgidTriplet[1];
         tpPdgidMotherTriplet[2] = tpPdgidMotherTriplet[1];
         tpMatchedL1Triplet[2] = tpMatchedL1Triplet[1];
+        tpNStubsTriplet[2] = tpNStubsTriplet[1];
+        tpNStubLayersTriplet[2] = tpNStubLayersTriplet[1];
         tpPtTriplet[1] = iterTP->pt();
         tpEtaTriplet[1] = iterTP->eta();
         tpPdgidTriplet[1] = iterTP->pdgId();
@@ -4086,6 +4135,8 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
         } else {
           tpMatchedL1Triplet[1] = false;
         }
+        tpNStubsTriplet[1] = nStubTP;
+        tpNStubLayersTriplet[1] = nStubLayerTP;
       } else if (iterTP->pt() > tpPtTriplet[2]) {
         tpPtTriplet[2] = iterTP->pt();
         tpEtaTriplet[2] = iterTP->eta();
@@ -4098,10 +4149,10 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
         } else {
           tpMatchedL1Triplet[2] = false;
         }
+        tpNStubsTriplet[2] = nStubTP;
+        tpNStubLayersTriplet[2] = nStubLayerTP;
       }
     }
-
-  
 
     if (std::abs(tpPdgidTriplet[0]) == 211 && std::abs(tpPdgidTriplet[1]) == 211 && std::abs(tpPdgidTriplet[2]) == 211) {
       if (std::abs(tpPdgidMotherTriplet[0]) == 24 && std::abs(tpPdgidMotherTriplet[1]) == 24 && std::abs(tpPdgidMotherTriplet[2]) == 24) {
@@ -4154,6 +4205,12 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
         } else {
           m_triplet_tp_pis_highest_pt->push_back(0);
         }
+
+        int min_nstubs = (int) std::min(std::min(tpNStubsTriplet[0],tpNStubsTriplet[1]), tpNStubsTriplet[2]);
+        int max_nstublayers = (int) std::max(std::max(tpNStubLayersTriplet[0],tpNStubLayersTriplet[1]), tpNStubLayersTriplet[2]);
+
+        m_triplet_tp_min_nstubs->push_back(min_nstubs);
+        m_triplet_tp_max_nstublayers->push_back(max_nstublayers);
       }
     }
 

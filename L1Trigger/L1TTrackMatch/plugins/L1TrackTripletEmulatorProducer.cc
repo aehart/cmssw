@@ -523,9 +523,9 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         tkTriplet.phi = 0;
         tkTriplet.eta = 0;
         tkTriplet.mass = (l1ttripletemu::tktriplet_mass_t) std::sqrt((float) f_tktriplet_mass_sq); 
-        tkTriplet.trk1Pt = 0;
-        tkTriplet.trk2Pt = 0;
-        tkTriplet.trk3Pt = 0;
+        tkTriplet.trk1Pt = (l1ttripletemu::tktriplet_trk_pt_t) trk1.f_Pt;
+        tkTriplet.trk2Pt = (l1ttripletemu::tktriplet_trk_pt_t) trk2.f_Pt;
+        tkTriplet.trk3Pt = (l1ttripletemu::tktriplet_trk_pt_t) trk3.f_Pt;
         tkTriplet.charge = 0;
         l1t::TkTripletWord::tktriplet_unassigned_t unassigned = 0;
         
