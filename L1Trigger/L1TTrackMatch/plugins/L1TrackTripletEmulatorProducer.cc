@@ -53,6 +53,7 @@ class L1TrackTripletEmulatorProducer : public stream::EDProducer<> {
     typedef TTTrack<Ref_Phase2TrackerDigi_> L1TTTrackType;
     typedef vector<L1TTTrackType> L1TTTrackCollectionType;
     typedef edm::RefVector<L1TTTrackCollectionType> L1TTTrackRefCollectionType;
+    void swapTripletTracks();
     static void fillDescriptions(ConfigurationDescriptions &descriptions);
     
     private:
@@ -114,8 +115,12 @@ class L1TrackTripletEmulatorProducer : public stream::EDProducer<> {
         double Z0;
         unsigned int Index;
         unsigned int gttLink;
-        unsigned int gttLinkIdx;
     };
+
+    void trackTripletSwap(L1track& dst,
+                      const L1TTTrackType& src,
+                      unsigned int gttLink,
+                      int eventTrackIndex);
     
     //    L1TTTrackType track;
     bool TrackSelector(L1track &, double, double, double, double, double, int);
@@ -193,6 +198,42 @@ PVtxToken_(consumes<l1t::VertexWordCollection>(iConfig.getParameter<InputTag>("L
     }
 }
 
+// Update triplet with a higher-pT track
+void L1TrackTripletEmulatorProducer::trackTripletSwap(
+    L1track& dst,
+    const L1TTTrackType& src,
+    unsigned int gttLink,
+    int eventTrackIndex) {
+
+  // fixed-point (firmware) fields
+  dst.f_Pt      = (l1ttripletemu::pt_t)  FloatPtFromBits(src);
+  dst.f_Eta     = (l1ttripletemu::eta_t) FloatEtaFromBits(src);
+  dst.globalPhi = l1ttripletemu::localToGlobalPhi(src.getPhiWord(), phiShifts_[src.phiSector()]);
+  dst.localPhi  = (TTTrack_TrackWord::phi_t) src.getPhiWord();
+  dst.phiSector = src.phiSector();
+
+  // floating-point (software) fields
+  if (use_float_track_precision_) {
+    dst.Pt     = src.momentum().perp();
+    dst.Eta    = src.eta();
+    dst.Phi    = src.phi();
+    dst.Z0     = src.z0();
+  } else {
+    dst.Pt     = FloatPtFromBits(src);
+    dst.Eta    = FloatEtaFromBits(src);
+    dst.Phi    = FloatPhiFromBits(src);
+    dst.Z0     = FloatZ0FromBits(src);
+  }
+
+  // shared metadata
+  dst.Charge   = (int)(src.rInv() / std::fabs(src.rInv()));
+  dst.MVA      = src.trkMVA1();
+  dst.Nstubs   = src.getStubRefs().size();
+  dst.Index    = eventTrackIndex;
+  dst.gttLink  = gttLink;
+}
+
+
 void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iSetup) {
     unique_ptr<l1t::TkTripletCollection> L1TrackTripletContainer(new l1t::TkTripletCollection);
     unique_ptr<l1t::TkTripletWordCollection> L1TrackTripletWordContainer(new l1t::TkTripletWordCollection);
@@ -217,162 +258,49 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
         return;
     }
     
-    L1track trk1{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0, 0};
-    L1track trk2{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0, 0};
-    L1track trk3{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0, 0};
+    L1track trk1{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0};
+    L1track trk2{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0};
+    L1track trk3{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0};
     
     l1ttripletemu::tktriplet_mass_sq_t f_tktriplet_mass_sq = 0;
     int this_l1track = 0;
     int current_track_idx = -1;
     int nTracks = (*TTTrackHandle).size();
 
-    // Array with track indices within a given gttLink 
-    std::vector<int> gttLinkIdxs(18);
-
     // Loop over L1 tracks in event
     for (auto iterL1Track = TTTrackHandle->begin(); iterL1Track != TTTrackHandle->end(); ++iterL1Track) {
         auto current_track = *iterL1Track;
-        
+
         // Get GTT link of l1track
         auto l1track_ptr = edm::Ptr<L1TTTrackType>(TTTrackHandle, this_l1track);
         L1TTTrackType l1track = *l1track_ptr;
-
         unsigned int current_track_link = l1t::demo::codecs::gttLinkID(l1track);
-        unsigned int current_track_link_idx = gttLinkIdxs.at(current_track_link);
-        gttLinkIdxs.at(current_track_link)++;  // increment gtt link index
 
+        // Get current track pT and event-wide index
         double current_track_pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
         current_track_idx += 1;
 
-        if (current_track_pt != 0) {
-            std::cout << "Trk (pT, eta, phi) = (" << current_track_pt << ", " << (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track) << ", " << l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]) << ")" << std::endl;
-        }
+        // Current track converted to L1track struct 
+        L1track cand{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0};
+        trackTripletSwap(cand, *current_track, current_track_link, current_track_idx);
+
+        auto better = [](const L1track& a, const L1track& b) {
+            if (a.f_Pt != b.f_Pt)                 return a.f_Pt > b.f_Pt;
+            if (std::abs(a.Eta) != std::abs(b.Eta)) return std::abs(a.Eta) > std::abs(b.Eta);
+            if (std::abs(a.Phi) != std::abs(b.Phi)) return std::abs(a.Phi) > std::abs(b.Phi);
+            return a.Index < b.Index; // final stabilizer to keep ordering deterministic
+        };
 
         // Select three highest-pT tracks and store relevant quantities
-        if (current_track_pt > trk1.f_Pt) { 
+        if (better(cand, trk1)) {
             trk3 = trk2;
             trk2 = trk1;
-            trk1.f_Pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
-            trk1.f_Eta = (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track);
-            trk1.globalPhi = l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]);
-            trk1.phiSector = current_track->phiSector();
-            trk1.localPhi = (TTTrack_TrackWord::phi_t) current_track->getPhiWord(); 
-            if (use_float_track_precision_) {
-                trk1.Pt = current_track->momentum().perp();
-                trk1.Eta = current_track->eta();
-                trk1.Phi = current_track->phi();
-                trk1.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                trk1.MVA = current_track->trkMVA1();
-                trk1.Nstubs = current_track->getStubRefs().size();
-                trk1.Z0 = current_track->z0();
-                trk1.Index = current_track_idx;
-                trk1.gttLink = current_track_link;
-                trk1.gttLinkIdx = current_track_link_idx;
-            } else {
-                trk1.Pt = FloatPtFromBits(*current_track);
-                trk1.Eta = FloatEtaFromBits(*current_track);
-                trk1.Phi = FloatPhiFromBits(*current_track);
-                trk1.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                trk1.MVA = current_track->trkMVA1();
-                trk1.Nstubs = current_track->getStubRefs().size();
-                trk1.Z0 = FloatZ0FromBits(*current_track);
-                trk1.Index = current_track_idx;
-                trk1.gttLink = current_track_link;
-                trk1.gttLinkIdx = current_track_link_idx;
-            }
-        } else if (current_track_pt > trk2.f_Pt) {
+            trk1 = cand;
+        } else if (better(cand, trk2)) {
             trk3 = trk2;
-            trk2.f_Pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
-            trk2.f_Eta = (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track);
-            trk2.globalPhi = l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]);
-            trk2.localPhi = (TTTrack_TrackWord::phi_t) current_track->getPhiWord();
-            trk2.phiSector = current_track->phiSector();
-            if (use_float_track_precision_) {
-                trk2.Pt = current_track->momentum().perp();
-                trk2.Eta = current_track->eta();
-                trk2.Phi = current_track->phi();
-                trk2.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                trk2.MVA = current_track->trkMVA1();
-                trk2.Nstubs = current_track->getStubRefs().size();
-                trk2.Z0 = current_track->z0();
-                trk2.Index = current_track_idx;
-                trk2.gttLink = current_track_link;
-                trk2.gttLinkIdx = current_track_link_idx;
-            } else {
-                trk2.Pt = FloatPtFromBits(*current_track);
-                trk2.Eta = FloatEtaFromBits(*current_track);
-                trk2.Phi = FloatPhiFromBits(*current_track);
-                trk2.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                trk2.MVA = current_track->trkMVA1();
-                trk2.Nstubs = current_track->getStubRefs().size();
-                trk2.Z0 = FloatZ0FromBits(*current_track);
-                trk2.Index = current_track_idx;
-                trk2.gttLink = current_track_link;
-                trk2.gttLinkIdx = current_track_link_idx;
-            }
-        } else if (current_track_pt > trk3.f_Pt) {
-            trk3.f_Pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
-            trk3.f_Eta = (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track);
-            trk3.globalPhi = l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]);
-            trk3.localPhi = (TTTrack_TrackWord::phi_t) current_track->getPhiWord();
-            trk3.phiSector = current_track->phiSector();
-            if (use_float_track_precision_) {
-                trk3.Pt = current_track->momentum().perp();
-                trk3.Eta = current_track->eta();
-                trk3.Phi = current_track->phi();
-                trk3.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                trk3.MVA = current_track->trkMVA1();
-                trk3.Nstubs = current_track->getStubRefs().size();
-                trk3.Z0 = current_track->z0();
-                trk3.Index = current_track_idx;
-                trk3.gttLink = current_track_link;
-                trk3.gttLinkIdx = current_track_link_idx;
-            } else {
-                trk3.Pt = FloatPtFromBits(*current_track);
-                trk3.Eta = FloatEtaFromBits(*current_track);
-                trk3.Phi = FloatPhiFromBits(*current_track);
-                trk3.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                trk3.MVA = current_track->trkMVA1();
-                trk3.Nstubs = current_track->getStubRefs().size();
-                trk3.Z0 = FloatZ0FromBits(*current_track);
-                trk3.Index = current_track_idx;
-                trk3.gttLink = current_track_link;
-                trk3.gttLinkIdx = current_track_link_idx;
-            }
-        } else if (current_track_pt == trk3.f_Pt) {
-            std::cout << "Curr track (pT, eta, phi, gttLink, gttIdx) = (" << current_track_pt << ", " << (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track) << ", " << l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]) << ", " << current_track_link << ", " << current_track_link_idx << ")" << std::endl;
-            std::cout << "trk3 (pT, eta, phi, gttLink, gttIdx)       = (" << trk3.f_Pt << ", " << trk3.f_Eta << ", " << trk3.globalPhi << ", " << trk3.gttLink << ", " << trk3.gttLinkIdx << ")" << std::endl;
-            if ((current_track_link_idx == trk3.gttLinkIdx && current_track_link < trk3.gttLink) || current_track_link_idx < trk3.gttLinkIdx) {
-                std::cout << "TEST" << std::endl;
-                trk3.f_Pt = (l1ttripletemu::pt_t) FloatPtFromBits(*current_track);
-                trk3.f_Eta = (l1ttripletemu::eta_t) FloatEtaFromBits(*current_track);
-                trk3.globalPhi = l1ttripletemu::localToGlobalPhi(current_track->getPhiWord(), phiShifts_[current_track->phiSector()]);
-                trk3.localPhi = (TTTrack_TrackWord::phi_t) current_track->getPhiWord();
-                trk3.phiSector = current_track->phiSector();
-                if (use_float_track_precision_) {
-                    trk3.Pt = current_track->momentum().perp();
-                    trk3.Eta = current_track->eta();
-                    trk3.Phi = current_track->phi();
-                    trk3.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                    trk3.MVA = current_track->trkMVA1();
-                    trk3.Nstubs = current_track->getStubRefs().size();
-                    trk3.Z0 = current_track->z0();
-                    trk3.Index = current_track_idx;
-                    trk3.gttLink = current_track_link;
-                    trk3.gttLinkIdx = current_track_link_idx;
-                } else {
-                    trk3.Pt = FloatPtFromBits(*current_track);
-                    trk3.Eta = FloatEtaFromBits(*current_track);
-                    trk3.Phi = FloatPhiFromBits(*current_track);
-                    trk3.Charge = (int)(current_track->rInv() / fabs(current_track->rInv()));
-                    trk3.MVA = current_track->trkMVA1();
-                    trk3.Nstubs = current_track->getStubRefs().size();
-                    trk3.Z0 = FloatZ0FromBits(*current_track);
-                    trk3.Index = current_track_idx;
-                    trk3.gttLink = current_track_link;
-                    trk3.gttLinkIdx = current_track_link_idx;
-                }
-            } 
+            trk2 = cand;
+        } else if (better(cand, trk3)) {
+            trk3 = cand;
         }
 
         // Increment counter
@@ -407,12 +335,12 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             l1ttripletemu::pxyz_t p2 = (l1ttripletemu::pxyz_t) trk2.f_Pt * coshLUT_[coshIndex2];
             l1ttripletemu::pxyz_t p3 = (l1ttripletemu::pxyz_t) trk3.f_Pt * coshLUT_[coshIndex3];
 
-            
+            /*
             std::cout << "p1 (EM) = " << p1 << std::endl;
             std::cout << "p2 (EM) = " << p2 << std::endl;
             std::cout << "p3 (EM) = " << p3 << std::endl;
             std::cout << "-----------------------------------" << std::endl;
-            
+            */
 
             // Z-component track momenta
             l1ttripletemu::pxyz_t pz1 = (l1ttripletemu::pxyz_t) trk1.f_Pt * sinhLUT_[sinhIndex1];
@@ -428,7 +356,7 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             l1ttripletemu::pxyz_t px1 = 0, py1 = 0;
             l1ttripletemu::pxyz_t px2 = 0, py2 = 0;
             l1ttripletemu::pxyz_t px3 = 0, py3 = 0;
-            L1track tmp_trk{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0, 0};
+            L1track tmp_trk{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0};
 
             // W mass calculation using LUTs (as in firmware)
             for (int tk = 0; tk < 3; tk++) {
