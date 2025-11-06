@@ -14,6 +14,20 @@ warnings.filterwarnings("ignore", category=UserWarning, module="numpy.core.getli
 W_PDGID = 24
 PI_PDGID = 211 
 
+
+def w3pi_decay(pdgid_list, data_list):
+    n_tps = len(data_list)
+    w3pi_data_list = []
+    print(f"n tps = {n_tps}")
+
+    for i in range(n_tps):
+        if (i == 10000): break
+        if (abs(pdgid_list[i]) == 211):
+            w3pi_data_list.append(data_list[i])
+
+    return w3pi_data_list
+        
+
 def plot_branch(
     branch_name, branch_data, output_file,
     x_range=None, y_range=None, nbins=-1, vline=None, hline=None,
@@ -88,16 +102,19 @@ def main(root_file_path):
 
         # Tracking particle pranches
         tp_pt = tree["tp_pt"].array(library="np")
+        """
         tp_eta = tree["tp_eta"].array(library="np")
         tp_phi = tree["tp_phi"].array(library="np")
         tp_dxy = tree["tp_dxy"].array(library="np")
         tp_d0 = tree["tp_d0"].array(library="np")
         tp_z0 = tree["tp_z0"].array(library="np")
         tp_d0_prod = tree["tp_d0_prod"].array(library="np")
-        tp_z0_prod = tree["tp_z0_prod"].array(library="np")
+        #tp_z0_prod = tree["tp_z0_prod"].array(library="np")
+        """
         tp_pdgid = tree["tp_pdgid"].array(library="np")
         tp_mother_pdgid = tree["tp_mother_pdgid"].array(library="np")
         tp_nstub = tree["tp_nstub"].array(library="np")
+        """
         tp_nstublayer = tree["tp_nstublayer"].array(library="np")
         tp_evenid = tree["tp_eventid"].array(library="np")
         tp_charge = tree["tp_charge"].array(library="np")
@@ -149,6 +166,7 @@ def main(root_file_path):
         trk_matchtp_dvx = tree["trk_matchtp_dvx"].array(library="np")
         trk_matchtp_dvy = tree["trk_matchtp_dvy"].array(library="np")
         trk_matchtp_dvz = tree["trk_matchtp_dvz"].array(library="np")
+        """
 
         # Extract N_events from data
         N_EVENTS = len(tp_pt)
@@ -159,10 +177,15 @@ def main(root_file_path):
             - the i in each list is the same event
             - the j in each similar group is a variable of an item (TP, L1, matched TP, matched L1) in some event i
         """
+        tp_pdgid_list = np.concatenate(tp_pdgid)
+        tp_mother_pdgid_list = np.concatenate(tp_mother_pdgid)
+        tp_nstub_list = np.concatenate(tp_nstub)
+        
+        branch_data_list = w3pi_decay(tp_pdgid_list, tp_nstub_list)
 
-        branch_name = "tp_nstub"
-        branch_data = tp_nstub
-        branch_data_flat = np.concatenate(branch_data)
+        branch_name = "tp_nstub_w3pi"
+        branch_data = np.asarray(branch_data_list)
+        branch_data_flat = branch_data #np.concatenate(branch_data)
         output_file = os.path.join(out_dir, f"{branch_name}_dist.pdf")
         x_range = 0,20
         y_range = None

@@ -42,7 +42,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
 # input and output
 ############################################################
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))  #
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))  #
 
 readFiles = cms.untracked.vstring(
     #'/store/mc/Phase2Spring24DIGIRECOMiniAOD/MinBias_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200ALCA_140X_mcRun4_realistic_v4-v2/120000/00be05a9-68a9-4947-b279-39f694cd536c.root'
@@ -67,7 +67,7 @@ process.Timing = cms.Service("Timing",
 )
 
 # CRAB handles this differently: outputted in eos area 
-process.TFileService = cms.Service("TFileService", fileName = cms.string('w3pi_interactive.root'), closeFileFast = cms.untracked.bool(True))
+process.TFileService = cms.Service("TFileService", fileName = cms.string('w3pi_test.root'), closeFileFast = cms.untracked.bool(True))
 
 ############################################################
 # L1 tracking: remake stubs?

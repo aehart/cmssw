@@ -251,7 +251,6 @@ def main(root_file_path):
         print(f"[info] Loaded {N_EVENTS} events.")
 
         # ------------------------- Plot many branches ------------------------- #
-        # group -> [branch names]
         groups = {
             "tp": [
                 "tp_pt", "tp_eta", "tp_phi", "tp_dxy", "tp_d0", "tp_z0",
@@ -280,7 +279,7 @@ def main(root_file_path):
             ],
         }
 
-        # Per-branch overrides (optional): x-range, logy, integer ticks, etc.
+        # Per-branch overrides
         overrides = {
             "tp_nstub":       dict(x_range=(0, 20), x_integer=True, logy=True),
             "tp_nstublayer":  dict(x_range=(0, 10), x_integer=True, logy=True),
@@ -295,7 +294,6 @@ def main(root_file_path):
         for group in groups:
             os.makedirs(os.path.join(out_root, group), exist_ok=True)
 
-        # Use locals() map to fetch arrays by name
         loc = locals()
 
         for group, names in groups.items():
@@ -306,7 +304,6 @@ def main(root_file_path):
 
                 raw = loc[name]
                 data = safe_flatten(raw).astype(float, copy=False)
-                # Clean NaN/Inf
                 data = data[~np.isnan(data) & ~np.isinf(data)]
                 if data.size == 0:
                     print(f"[warn] branch '{name}' is empty after cleaning, skipping.")
@@ -327,7 +324,6 @@ def main(root_file_path):
                     logy=True,  # default to log-y for count histograms
                 )
 
-                # Apply overrides if present
                 if name in overrides:
                     kw.update(overrides[name])
 
