@@ -53,7 +53,6 @@ class L1TrackTripletEmulatorProducer : public stream::EDProducer<> {
     typedef TTTrack<Ref_Phase2TrackerDigi_> L1TTTrackType;
     typedef vector<L1TTTrackType> L1TTTrackCollectionType;
     typedef edm::RefVector<L1TTTrackCollectionType> L1TTTrackRefCollectionType;
-    void swapTripletTracks();
     static void fillDescriptions(ConfigurationDescriptions &descriptions);
     
     private:
@@ -117,7 +116,7 @@ class L1TrackTripletEmulatorProducer : public stream::EDProducer<> {
         unsigned int gttLink;
     };
 
-    void trackTripletSwap(L1track& dst,
+    void toL1track(L1track& dst,
                       const L1TTTrackType& src,
                       unsigned int gttLink,
                       int eventTrackIndex);
@@ -199,7 +198,7 @@ PVtxToken_(consumes<l1t::VertexWordCollection>(iConfig.getParameter<InputTag>("L
 }
 
 // Update triplet with a higher-pT track
-void L1TrackTripletEmulatorProducer::trackTripletSwap(
+void L1TrackTripletEmulatorProducer::toL1track(
     L1track& dst,
     const L1TTTrackType& src,
     unsigned int gttLink,
@@ -282,14 +281,19 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
 
         // Current track converted to L1track struct 
         L1track cand{0, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, 0, 0};
-        trackTripletSwap(cand, *current_track, current_track_link, current_track_idx);
+        toL1track(cand, *current_track, current_track_link, current_track_idx);
 
         auto better = [](const L1track& a, const L1track& b) {
             if (a.f_Pt != b.f_Pt)                 return a.f_Pt > b.f_Pt;
             if (std::abs(a.Eta) != std::abs(b.Eta)) return std::abs(a.Eta) > std::abs(b.Eta);
-            if (std::abs(a.Phi) != std::abs(b.Phi)) return std::abs(a.Phi) > std::abs(b.Phi);
-            return a.Index < b.Index; // final stabilizer to keep ordering deterministic
+            if (a.globalPhi != b.globalPhi) return a.globalPhi > b.globalPhi;
+            return a.Index > b.Index;
         };
+
+        if (cand.f_Pt == trk3.f_Pt && cand.f_Pt != 0) {
+          std::cout << "Trk3: pT = " << trk3.f_Pt << ", Eta = " << trk3.f_Eta << ", globalPhi = " << trk3.globalPhi << std::endl;
+          std::cout << "cand: pT = " << cand.f_Pt << ", Eta = " << cand.f_Eta << ", globalPhi = " << cand.globalPhi << std::endl;
+        }
 
         // Select three highest-pT tracks and store relevant quantities
         if (better(cand, trk1)) {
@@ -303,19 +307,21 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             trk3 = cand;
         }
 
+        
+
         // Increment counter
         this_l1track++;
         
         // Triplet invariant mass calculation
         if (this_l1track == nTracks) {
             // DEBUG: PRINT TRACK TRIPLET FIELDS
-            /*
+            
             std::cout << "-----------------------------------" << std::endl;
             std::cout << "Trk1: pT = " << trk1.f_Pt << ", Eta = " << trk1.f_Eta << ", globalPhi = " << trk1.globalPhi << std::endl;
             std::cout << "Trk2: pT = " << trk2.f_Pt << ", Eta = " << trk2.f_Eta << ", globalPhi = " << trk2.globalPhi << std::endl;
             std::cout << "Trk3: pT = " << trk3.f_Pt << ", Eta = " << trk3.f_Eta << ", globalPhi = " << trk3.globalPhi << std::endl;
             std::cout << "-----------------------------------" << std::endl;
-            */
+            
 
             // Check that all triplet tracks are valid
             if (trk1.f_Pt == 0 || trk2.f_Pt == 0 || trk3.f_Pt == 0) { break; }

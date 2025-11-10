@@ -15,14 +15,19 @@ W_PDGID = 24
 PI_PDGID = 211 
 
 
-def w3pi_decay(pdgid_list, data_list):
+def w3pi_decay(pdgid_list, pdgid_mother_list, pt_list, eta_list, data_list):
     n_tps = len(data_list)
     w3pi_data_list = []
-    print(f"n tps = {n_tps}")
+    print(f"n tps = {n_tps}") 
 
     for i in range(n_tps):
         if (i == 10000): break
-        if (abs(pdgid_list[i]) == 211):
+
+        # Define boolean fields
+        acceptance = pt_list[i] > 2 and abs(eta_list[i]) < 2.4
+        w3pi_obj = abs(pdgid_list[i]) == 211  # right now just require pion
+
+        if (w3pi_obj and acceptance):
             w3pi_data_list.append(data_list[i])
 
     return w3pi_data_list
@@ -102,8 +107,8 @@ def main(root_file_path):
 
         # Tracking particle pranches
         tp_pt = tree["tp_pt"].array(library="np")
-        """
         tp_eta = tree["tp_eta"].array(library="np")
+        """
         tp_phi = tree["tp_phi"].array(library="np")
         tp_dxy = tree["tp_dxy"].array(library="np")
         tp_d0 = tree["tp_d0"].array(library="np")
@@ -180,8 +185,10 @@ def main(root_file_path):
         tp_pdgid_list = np.concatenate(tp_pdgid)
         tp_mother_pdgid_list = np.concatenate(tp_mother_pdgid)
         tp_nstub_list = np.concatenate(tp_nstub)
+        tp_pt_list = np.concatenate(tp_pt)
+        tp_eta_list = np.concatenate(tp_eta)
         
-        branch_data_list = w3pi_decay(tp_pdgid_list, tp_nstub_list)
+        branch_data_list = w3pi_decay(tp_pdgid_list, tp_mother_pdgid_list, tp_pt_list, tp_eta_list, tp_nstub_list)
 
         branch_name = "tp_nstub_w3pi"
         branch_data = np.asarray(branch_data_list)

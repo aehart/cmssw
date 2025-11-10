@@ -236,7 +236,7 @@ void GTTFileWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // Link 3
   std::vector<ap_uint<64>> mesonsData;
   mesonsData.insert(mesonsData.end(), tripletsData.at(0).begin(), tripletsData.at(0).end());
-  mesonsData.insert(mesonsData.end(), 37, 0);
+  mesonsData.insert(mesonsData.end(), 36, 0);
 
   std::vector<ap_uint<64>> tracksVerticesData;
   tracksVerticesData.insert(tracksVerticesData.end(), 36, 0);

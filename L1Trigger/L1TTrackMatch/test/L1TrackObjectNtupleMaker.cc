@@ -1778,7 +1778,7 @@ void L1TrackObjectNtupleMaker::beginJob() {
 
   // ntuple
   eventTree = fs->make<TTree>("eventTree", "Event tree");
-  if (SaveAllTracks && (Displaced == "Prompt" || Displaced == "Both")) {
+  if ((Displaced == "Prompt" || Displaced == "Both")) {
     eventTree->Branch("trk_pt", &m_trk_pt);
     eventTree->Branch("trk_eta", &m_trk_eta);
     eventTree->Branch("trk_phi", &m_trk_phi);
@@ -2274,7 +2274,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
   }
 
   // clear variables
-  if (SaveAllTracks && (Displaced == "Prompt" || Displaced == "Both")) {
+  if ((Displaced == "Prompt" || Displaced == "Both")) {
     m_trk_pt->clear();
     m_trk_eta->clear();
     m_trk_phi->clear();
@@ -3000,7 +3000,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
   // ----------------------------------------------------------------------------------------------
   // loop over (prompt) L1 tracks
   // ----------------------------------------------------------------------------------------------
-  if (SaveAllTracks && (Displaced == "Prompt" || Displaced == "Both")) {
+  if ((Displaced == "Prompt" || Displaced == "Both")) {
     if (DebugMode) {
       edm::LogVerbatim("Tracklet") << "\n Loop over L1 tracks!";
       edm::LogVerbatim("Tracklet") << "\n Looking at " << Displaced << " tracks!";
@@ -3269,25 +3269,24 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       m_trk_matchtp_vy->push_back(myTP_vy);
       m_trk_matchtp_vz->push_back(myTP_vz);
 
-      if (my_tp->status() == 1) {
-        m_trk_matchtp_isHard->push_back(1);
+      // after computing myFake, myTP_* etc.
+      if (!my_tp.isNull()) {
+        m_trk_matchtp_isHard->push_back( my_tp->status() == 1 ? 1 : 0 );
+
+        // Decay vertices (optional)
+        int counter = 0;
+        for (const auto& ref : my_tp->decayVertices()) {
+          if (counter == 1) break;
+          const TrackingVertex v = *ref;
+          myTP_dvx = v.position().x();
+          myTP_dvy = v.position().y();
+          myTP_dvz = v.position().z();
+          counter++;
+        }
       } else {
         m_trk_matchtp_isHard->push_back(0);
+        myTP_dvx = myTP_dvy = myTP_dvz = -999;
       }
-
-      // Decay vertices
-      int counter = 0;
-      for (const auto& ref : my_tp->decayVertices()) {
-        if (counter == 1) {
-          break;
-        }
-        const TrackingVertex v = *ref;
-        myTP_dvx = v.position().x();
-        myTP_dvy = v.position().y();
-        myTP_dvz = v.position().z();
-        counter++;
-      }
-
       m_trk_matchtp_dvx->push_back(myTP_dvx);
       m_trk_matchtp_dvy->push_back(myTP_dvy);
       m_trk_matchtp_dvz->push_back(myTP_dvz);
