@@ -12,10 +12,9 @@ import os
 L1TRK_INST ="MyL1TrackJets" ### if not in input DIGRAW then we make them in the above step
 process = cms.Process(L1TRK_INST)
 
-# Consider switching to just prompt, running over one file
-L1TRKALGO = 'HYBRID'  #baseline, 4par fit 
+#L1TRKALGO = 'HYBRID'  #baseline, 4par fit
 #L1TRKALGO = 'HYBRID_DISPLACED'  #extended, 5par fit
-#L1TRKALGO = 'HYBRID_PROMPTANDDISP'
+L1TRKALGO = 'HYBRID_PROMPTANDDISP'
 
 DISPLACED = ''
 
@@ -34,28 +33,25 @@ process.load('Configuration.Geometry.GeometryExtendedRun4D110_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
+
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.INFO.limit = cms.untracked.int32(0) # default: 0
 
 ############################################################
 # input and output
 ############################################################
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))  #
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(20))
 
 readFiles = cms.untracked.vstring(
-    #'/store/mc/Phase2Spring24DIGIRECOMiniAOD/MinBias_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200ALCA_140X_mcRun4_realistic_v4-v2/120000/00be05a9-68a9-4947-b279-39f694cd536c.root'
-    #'/store/mc/Phase2Spring24DIGIRECOMiniAOD/MinBias_TuneCP5_14TeV-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200ALCA_140X_mcRun4_realistic_v4-v2/120000/0710092e-a5d4-4155-bfb9-fb5f68ad4241.root'
-    '/store/mc/Phase2Spring24DIGIRECOMiniAOD/WTo3Pi_TuneCP5_14TeV_pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_AllTP_140X_mcRun4_realistic_v4-v1/2810000/049937e5-a019-4981-9c5f-8776e42a08ea.root'
+    '/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_L1TFix_Trk1GeV_131X_mcRun4_realistic_v9-v1/50000/1cc5c14c-5bae-4e68-a369-04e230788660.root'
 )
-
-
 secFiles = cms.untracked.vstring()
 
 process.source = cms.Source ("PoolSource",
                             fileNames = readFiles,
-                            #fileNames = cms.untracked.vstring(),
                             secondaryFileNames = secFiles,
                             duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
                             )
@@ -66,8 +62,8 @@ process.Timing = cms.Service("Timing",
   useJobReport = cms.untracked.bool(False)
 )
 
-# CRAB handles this differently: outputted in eos area 
-process.TFileService = cms.Service("TFileService", fileName = cms.string('w3pi_t.root'), closeFileFast = cms.untracked.bool(True))
+process.TFileService = cms.Service("TFileService", fileName = cms.string('GTTObjects_ttbar200PU_Spring23.root'), closeFileFast = cms.untracked.bool(True))
+
 
 ############################################################
 # L1 tracking: remake stubs?
@@ -82,6 +78,7 @@ TTClusterAssociatorFromPixelDigis.digiSimLinks = cms.InputTag("simSiPixelDigis",
 
 process.TTClusterStub = cms.Path(process.TrackTriggerClustersStubs)
 process.TTClusterStubTruth = cms.Path(process.TrackTriggerAssociatorClustersStubs)
+
 
 # DTC emulation
 process.load('L1Trigger.TrackerDTC.DTC_cff')
@@ -201,6 +198,8 @@ elif (L1TRKALGO == 'HYBRID_PROMPTANDDISP'):
     DISPLACED = 'Both'
 
 
+
+
 ############################################################
 # Define the track ntuple process, MyProcess is the (unsigned) PDGID corresponding to the process which is run
 # e.g. single electron/positron = 11
@@ -213,8 +212,8 @@ elif (L1TRKALGO == 'HYBRID_PROMPTANDDISP'):
 
 process.L1TrackNtuple = cms.EDAnalyzer('L1TrackObjectNtupleMaker',
         MyProcess = cms.int32(1),
-        DebugMode = cms.bool(True),      # printout lots of debug statements
-        SaveAllTracks = cms.bool(False),  # save *all* L1 tracks, not just truth matched to primary particle
+        DebugMode = cms.bool(False),      # printout lots of debug statements
+        SaveAllTracks = cms.bool(True),  # save *all* L1 tracks, not just truth matched to primary particle
         SaveStubs = cms.bool(False),      # save some info for *all* stubs
         Displaced = cms.string(DISPLACED),# "Prompt", "Displaced", "Both"
         L1Tk_minNStub = cms.int32(4),     # L1 tracks with >= 4 stubs
@@ -291,7 +290,6 @@ process.L1TrackNtuple = cms.EDAnalyzer('L1TrackObjectNtupleMaker',
         runDispVert = cms.bool(runDispVert)
 )
 
-
 process.ntuple = cms.Path(process.L1TrackNtuple)
 
 process.out = cms.OutputModule( "PoolOutputModule",
@@ -310,9 +308,9 @@ process.pOut = cms.EndPath(process.out)
 # use this if cluster/stub associators not available
 # process.schedule = cms.Schedule(process.TTClusterStubTruth,process.TTTracksEmuWithTruth,process.ntuple)
 
-#process.schedule = cms.Schedule(process.TTClusterStub, process.TTClusterStubTruth, process.dtc, process.TTTracksEmuWithTruth, process.pL1GTTInput, process.pL1TrackSelection, process.pPV, process.pPVemu,process.pL1TrackVertexAssociation, process.pL1TrackJets, process.pL1TrackJetsEmu,process.pL1TrackFastJets, process.pTkMET, process.pTkMETEmu, process.pTkMHT, process.pTkMHTEmulator,process.pL1TrackTripletEmulator,process.ntuple)
-process.schedule = cms.Schedule(process.dtc, process.TTTracksEmuWithTruth, process.pL1GTTInput, process.pL1TrackSelection, process.pPV, process.pPVemu,process.pL1TrackVertexAssociation, process.pL1TrackJets, process.pL1TrackJetsEmu,process.pL1TrackFastJets, process.pTkMET, process.pTkMETEmu, process.pTkMHT, process.pTkMHTEmulator,process.pL1TrackTripletEmulator,process.ntuple)
+process.schedule = cms.Schedule(process.TTClusterStub, process.TTClusterStubTruth, process.dtc, process.TTTracksEmuWithTruth, process.pL1GTTInput, process.pL1TrackSelection, process.pPV, process.pPVemu,process.pL1TrackVertexAssociation, process.pL1TrackJets, process.pL1TrackJetsEmu,process.pL1TrackFastJets, process.pTkMET, process.pTkMETEmu, process.pTkMHT, process.pTkMHTEmulator,process.pL1TrackTripletEmulator,process.ntuple)
 
 if(runDispVert):
     process.schedule.append(process.DispVert)
+
 

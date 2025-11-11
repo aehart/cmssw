@@ -307,21 +307,12 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             trk3 = cand;
         }
 
-        
-
         // Increment counter
         this_l1track++;
         
         // Triplet invariant mass calculation
         if (this_l1track == nTracks) {
             // DEBUG: PRINT TRACK TRIPLET FIELDS
-            
-            std::cout << "-----------------------------------" << std::endl;
-            std::cout << "Trk1: pT = " << trk1.f_Pt << ", Eta = " << trk1.f_Eta << ", globalPhi = " << trk1.globalPhi << std::endl;
-            std::cout << "Trk2: pT = " << trk2.f_Pt << ", Eta = " << trk2.f_Eta << ", globalPhi = " << trk2.globalPhi << std::endl;
-            std::cout << "Trk3: pT = " << trk3.f_Pt << ", Eta = " << trk3.f_Eta << ", globalPhi = " << trk3.globalPhi << std::endl;
-            std::cout << "-----------------------------------" << std::endl;
-            
 
             // Check that all triplet tracks are valid
             if (trk1.f_Pt == 0 || trk2.f_Pt == 0 || trk3.f_Pt == 0) { break; }
@@ -340,13 +331,6 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
             l1ttripletemu::pxyz_t p1 = (l1ttripletemu::pxyz_t) trk1.f_Pt * coshLUT_[coshIndex1];
             l1ttripletemu::pxyz_t p2 = (l1ttripletemu::pxyz_t) trk2.f_Pt * coshLUT_[coshIndex2];
             l1ttripletemu::pxyz_t p3 = (l1ttripletemu::pxyz_t) trk3.f_Pt * coshLUT_[coshIndex3];
-
-            /*
-            std::cout << "p1 (EM) = " << p1 << std::endl;
-            std::cout << "p2 (EM) = " << p2 << std::endl;
-            std::cout << "p3 (EM) = " << p3 << std::endl;
-            std::cout << "-----------------------------------" << std::endl;
-            */
 
             // Z-component track momenta
             l1ttripletemu::pxyz_t pz1 = (l1ttripletemu::pxyz_t) trk1.f_Pt * sinhLUT_[sinhIndex1];
@@ -424,20 +408,6 @@ void L1TrackTripletEmulatorProducer::produce(Event &iEvent, const EventSetup &iS
                         py3 = -((l1ttripletemu::pxyz_t) tmp_trk.f_Pt * cosLUT_[sinIndex]);
                     }
                 }    
-            }
-
-            /*
-            std::cout << "px (EM) = (" << px1 << ", " << px2 << ", " << px3 << ")" << std::endl;
-            std::cout << "py (EM) = (" << py1 << ", " << py2 << ", " << py3 << ")" << std::endl;
-            std::cout << "pz (EM) = (" << pz1 << ", " << pz2 << ", " << pz3 << ")" << std::endl;
-            std::cout << "-----------------------------------" << std::endl;
-            
-            std::cout << "W mass sq = " << (l1ttripletemu::tktriplet_mass_sq_t) (
-                (p1 + p2 + p3)*(p1 + p2 + p3)
-                - (px1 + px2 + px3)*(px1 + px2 + px3)
-                - (py1 + py2 + py3)*(py1 + py2 + py3)
-                - (pz1 + pz2 + pz3)*(pz1 + pz2 + pz3) ) << std::endl;
-            */
 
             // W mass calculation
             f_tktriplet_mass_sq = (l1ttripletemu::tktriplet_mass_sq_t) (
