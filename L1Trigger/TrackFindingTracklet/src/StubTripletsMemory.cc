@@ -22,9 +22,4 @@ void StubTripletsMemory::writeST(bool first, unsigned int iSector) {
     out_ << hexstr(j) << " " << stub1index << "|" << stub2index << "|" << stub3index << endl;
   }
   out_.close();
-
-  bx_++;
-  event_++;
-  if (bx_ > 7)
-    bx_ = 0;
 }

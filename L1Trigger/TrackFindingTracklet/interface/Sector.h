@@ -87,6 +87,8 @@ namespace trklet {
     void writeTF(bool first);
     void writeCT(bool first);
 
+    void incrBXEvent();
+
     void clean();
 
     // execute the different tracklet processing modules
