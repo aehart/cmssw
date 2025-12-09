@@ -15,8 +15,8 @@ process = cms.Process("L1TrackNtuple")
 ############################################################
 
 # D110 recommended (but D98 still works)
-GEOMETRY = "D98"
-#GEOMETRY = "D110"
+#GEOMETRY = "D98"
+GEOMETRY = "D110"
 
 # Set L1 tracking algorithm:
 # 'HYBRID' (baseline, 4par fit) or 'HYBRID_DISPLACED' (extended, 5par fit).
@@ -25,7 +25,7 @@ GEOMETRY = "D98"
 # 'HYBRID_DISPLACED_NEWKF_KILL' displaced tracklet followed by DR emulation and 5 param fit sim
 # 'HYBRID_DISPLACED_NEWKF_MERGE' displaced tracklet followed by DR simulation and 5 param fit sim
 # (Or legacy algos 'TMTT' or 'TRACKLET').
-L1TRKALGO = 'HYBRID'
+L1TRKALGO = 'HYBRID_NEWKF'
 
 WRITE_DATA = False
 
@@ -88,7 +88,7 @@ if GEOMETRY == "D110":
   #inputMC=getCMSdata(dataName)
   
   # ttbar + 200PU
-  inputMC = ["/store/relval/CMSSW_15_1_0_pre3/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_150X_mcRun4_realistic_v1_STD_Run4D110_PU-v1/2590000/00c675dc-1517-4af7-8dd4-841e0668fefe.root"]
+  inputMC = ["file:/eos/home-a/ahart/PU200_TTbar_numEvent100.root"]
 
 elif GEOMETRY == "D98":
 
