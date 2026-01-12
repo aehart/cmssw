@@ -23,13 +23,6 @@ namespace trklet {
 
     ~TrackletCalculatorDisplaced() override = default;
 
-    void addOutputProjection(TrackletProjectionsMemory*& outputProj, MemoryBase* memory);
-
-    void addOutput(MemoryBase* memory, std::string output) override;
-    void addInput(MemoryBase* memory, std::string input) override;
-
-    void execute(unsigned int iSector, double phimin, double phimax);
-
     void addDiskProj(Tracklet* tracklet, int disk);
     bool addLayerProj(Tracklet* tracklet, int layer);
 
@@ -171,11 +164,6 @@ namespace trklet {
 
     std::vector<double> toR_;
     std::vector<double> toZ_;
-
-    std::vector<AllStubsMemory*> innerallstubs_;
-    std::vector<AllStubsMemory*> middleallstubs_;
-    std::vector<AllStubsMemory*> outerallstubs_;
-    std::vector<StubTripletsMemory*> stubtriplets_;
 
     TrackletParametersMemory* trackletpars_;
 
