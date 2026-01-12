@@ -3,7 +3,6 @@
 
 #include "L1Trigger/TrackFindingTracklet/interface/ProcessBase.h"
 #include "L1Trigger/TrackFindingTracklet/interface/TrackletProjectionsMemory.h"
-#include "L1Trigger/TrackFindingTracklet/interface/StubTripletsMemory.h"
 #include "L1Trigger/TrackFindingTracklet/interface/AllStubsMemory.h"
 #include "L1Trigger/TrackFindingTracklet/interface/TrackletParametersMemory.h"
 
